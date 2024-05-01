@@ -2,6 +2,7 @@ import exp from "constants";
 import express from "express";
 import path from "path";
 import HttpStatus from "http-status-codes";
+import fileStream from "fs";
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const app = express();
@@ -11,6 +12,7 @@ const PORT = 3000;
 app.set('view engine', 'pug');
 app.set('views', './views')
 app.use(express.static("public"))
+app.use(express.json());
 
 
 app.get('/', function (req, res) {
@@ -29,8 +31,45 @@ router.route('/game/rollbtn')
         res.status(HttpStatus.ACCEPTED).json(result);
     });
 
+app.post('/register', function(req, res) {
+    let user = new User(req.body.name);
+
+    if(!fileStream.existsSync("users.txt")) {
+        //add something about why
+       res.status(HttpStatus.METHOD_FAILURE).send();
+       return;
+    }
+
+    let content = fileStream.readFileSync("users.txt")
+    let userList = [];
+    if(content.length > 0) {
+        userList = JSON.parse(content);
+        if(userList.filter( function(u) { return u.name === user.name}).length > 0) {
+            //add that username already exists to response
+            res.status(HttpStatus.NOT_MODIFIED).send();
+            return;
+        }
+    }  
+
+    userList.push(user)
+    fileStream.writeFile("users.txt", JSON.stringify(userList), function(err) {
+        if(err) {
+            console.log("tried to save " + user.name + ", to file but failed");
+        }
+    })
+    res.status(HttpStatus.ACCEPTED).send();
+    
+})
+
+router.route('/game/lockfield')
+    .post((req, res) => {
+        data = req.body;
+
+    })
+
 //MUST BE AT THE BOTTOM OF ALL THE ROUTER CODE
 app.use('/rest', router);
+
 
 
 
@@ -112,6 +151,13 @@ class Score {
 class Player {
     constructor(name) {
         this.score = new Score();
+        this.name = name;
+    }
+}
+
+//move to another file, export
+class User {
+    constructor(name) {
         this.name = name;
     }
 }
