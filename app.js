@@ -31,7 +31,8 @@ router.route('/game/rollbtn')
         res.status(HttpStatus.ACCEPTED).json(result);
     });
 
-app.post('/register', function(req, res) {
+router.route('/register')
+    .post((req, res) => {
     let user = new User(req.body.name);
 
     if(!fileStream.existsSync("users.txt")) {
@@ -49,7 +50,7 @@ app.post('/register', function(req, res) {
             res.status(HttpStatus.NOT_MODIFIED).send();
             return;
         }
-    }  
+    }
 
     userList.push(user)
     fileStream.writeFile("users.txt", JSON.stringify(userList), function(err) {
@@ -60,6 +61,23 @@ app.post('/register', function(req, res) {
     res.status(HttpStatus.ACCEPTED).send();
     
 })
+
+.get((req, res) => {
+    if(!fileStream.existsSync("users.txt")) {
+        //add something about why
+       res.status(HttpStatus.METHOD_FAILURE).send();
+       return;
+    }
+    let userList = [];
+    let content = fileStream.readFileSync("users.txt")
+    if(content.length > 0) {
+        userList = JSON.parse(content);
+    }
+   
+    res.status(HttpStatus.OK).json(JSON.stringify(userList));
+})
+
+
 
 router.route('/game/lockfield')
     .post((req, res) => {
