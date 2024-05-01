@@ -1,4 +1,7 @@
 let scores;
+//Dice images
+let diceImages;
+let diceValues = [0, 0, 0, 0, 0];
 //Roll button for dice
 let rollButton = document.getElementById("rollButton");
 rollButton.onclick = () => buttonRoll();
@@ -26,7 +29,7 @@ window.onload = function () {
     }
 
     //Dice event listeners
-    let dice = [document.getElementById('die1'), document.getElementById('die2'), document.getElementById('die3'),
+    dice = [document.getElementById('die1'), document.getElementById('die2'), document.getElementById('die3'),
     document.getElementById('die4'), document.getElementById('die5')];
     for (let i = 0; i < dice.length; i++) {
         dice[i].addEventListener("click", function () {
@@ -47,23 +50,23 @@ window.onload = function () {
 function buttonRoll() {
     rollButton.disabled = true;
     //restcall to backend //TEST EXAMPLE
-    fetch("ourUrl/rollbtn").then(response => {
+    fetch("/game/rollbtn").then(response => {
         if (!response.ok) {
             throw new Error("ain't working")
         }
 
         return response.json();
     }).then(data => {
+        console.log(data);
         for (let i = 0; i < dice.length; i++) {
-            dice[i] = data.dice[i];
+            diceValues[i] = data.dice[i];
             dice[i].style.borderColor = "black";
-            diceHeld[i] = false;
         }
 
         updateDice();
 
         for (let i = 0; i < scores.length; i++) {
-            scores[i].value(data.scores[i]);
+            scores[i].value = data.pot[i];
         }
     })
 
@@ -73,39 +76,37 @@ function buttonRoll() {
 //Updates the dice images
 function updateDice() {
     for (i = 0; i < dice.length; i++) {
-        if (!diceHeld[i]) {
-            switch (diceValues[i]) {
-                case 1:
-                    dice[i].src = "../DiceImages/dice-six-faces-one.png";
-                    break;
-                case 2:
-                    dice[i].src = "../DiceImages/dice-six-faces-two.png";
-                    break;
-                case 3:
-                    dice[i].src = "../DiceImages/dice-six-faces-three.png";
-                    break;
-                case 4:
-                    dice[i].src = "../DiceImages/dice-six-faces-four.png";
-                    break;
-                case 5:
-                    dice[i].src = "../DiceImages/dice-six-faces-five.png";
-                    break;
-                case 6:
-                    dice[i].src = "../DiceImages/dice-six-faces-six.png";
-                    break;
-            }
+        switch (diceValues[i]) {
+            case 1:
+                dice[i].src = "../DiceImages/dice-six-faces-one.png";
+                break;
+            case 2:
+                dice[i].src = "../DiceImages/dice-six-faces-two.png";
+                break;
+            case 3:
+                dice[i].src = "../DiceImages/dice-six-faces-three.png";
+                break;
+            case 4:
+                dice[i].src = "../DiceImages/dice-six-faces-four.png";
+                break;
+            case 5:
+                dice[i].src = "../DiceImages/dice-six-faces-five.png";
+                break;
+            case 6:
+                dice[i].src = "../DiceImages/dice-six-faces-six.png";
+                break;
         }
     }
 }
 
-function resetGame(){
-    for (let field of scores){
+function resetGame() {
+    for (let field of scores) {
         field.style.backgroundColor = "white";
         field.disabled = false;
         field.value = "";
     }
-    
-    for (let i = 0; i < dice.length; i++){
+
+    for (let i = 0; i < dice.length; i++) {
         diceValues[i] = 0;
         diceHeld[i] = false;
         dice[i].style.borderColor = "black"

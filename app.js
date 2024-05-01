@@ -1,6 +1,7 @@
 import exp from "constants";
 import express from "express";
 import path from "path";
+import HttpStatus from "http-status-codes";
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const app = express();
@@ -15,6 +16,14 @@ app.use(express.static("public"))
 app.get('/', function (req, res) {
 
     res.render('yatzy');
+})
+
+app.get('/game/rollbtn', function(req, res) {
+    rollDice();
+    let potentialScore = [1,2,3,4,5];
+    let result = { pot : potentialScore, dice:diceValues}
+    res.status(HttpStatus.ACCEPTED).json(result);
+
 })
 
 
@@ -54,7 +63,7 @@ function buttonRoll() {
 
 //Rolls the dice
 function rollDice() {
-    for (i = 0; i < dice.length; i++) {
+    for (let i = 0; i < diceValues.length; i++) {
         if (!diceHeld[i]) {
             diceValues[i] = Math.floor(Math.random() * 6) + 1;
         }
