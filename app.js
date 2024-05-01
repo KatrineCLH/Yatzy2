@@ -4,6 +4,7 @@ import path from "path";
 import HttpStatus from "http-status-codes";
 import fileStream from "fs";
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const userFile = "users.txt";
 
 const app = express();
 const router = express .Router();
@@ -16,7 +17,6 @@ app.use(express.json());
 
 
 app.get('/', function (req, res) {
-
     res.render('yatzy');
 })
 
@@ -35,13 +35,13 @@ router.route('/register')
     .post((req, res) => {
     let user = new User(req.body.name);
 
-    if(!fileStream.existsSync("users.txt")) {
+    if(!fileStream.existsSync(userFile)) {
         //add something about why
        res.status(HttpStatus.METHOD_FAILURE).send();
        return;
     }
 
-    let content = fileStream.readFileSync("users.txt")
+    let content = fileStream.readFileSync(userFile)
     let userList = [];
     if(content.length > 0) {
         userList = JSON.parse(content);
@@ -53,7 +53,7 @@ router.route('/register')
     }
 
     userList.push(user)
-    fileStream.writeFile("users.txt", JSON.stringify(userList), function(err) {
+    fileStream.writeFile(userFile, JSON.stringify(userList), function(err) {
         if(err) {
             console.log("tried to save " + user.name + ", to file but failed");
         }
@@ -63,13 +63,13 @@ router.route('/register')
 })
 
 .get((req, res) => {
-    if(!fileStream.existsSync("users.txt")) {
+    if(!fileStream.existsSync(userFile)) {
         //add something about why
        res.status(HttpStatus.METHOD_FAILURE).send();
        return;
     }
     let userList = [];
-    let content = fileStream.readFileSync("users.txt")
+    let content = fileStream.readFileSync(userFile)
     if(content.length > 0) {
         userList = JSON.parse(content);
     }
@@ -134,13 +134,29 @@ function rollDice() {
     }
 }
 
-function createNewPlayer(name) {
-    return new Player(name);
-}
 
 function updateScore(playername, scoreField) {
     // read json file, get player with name or have a variable that contains current player
     // get scorefield field from player.score.ones etc. and swap value. Probably a switch case
+}
+
+function getUser(username) {
+    if(!fileStream.existsSync(userFile)) {
+        //add something about why
+        console.log("No file for players found")
+        return;
+    }
+    let userList = [];
+    let content = fileStream.readFileSync(userFile)
+    try {
+        userList = JSON.parse(content);
+        //there should always only be one, so we're just returning first.
+        return userList.filter((u)=> u.name === username)[0];
+    } catch(e) {
+        console.log("error reading json file")
+    }
+
+    return null;
 }
 
 class Score {
