@@ -58,22 +58,12 @@ router.route('/register')
             console.log("tried to save " + user.name + ", to file but failed");
         }
     })
-    res.status(HttpStatus.ACCEPTED).send();
+    res.status(HttpStatus.OK).json(JSON.stringify(userList)).send();
     
 })
 
 .get((req, res) => {
-    if(!fileStream.existsSync(userFile)) {
-        //add something about why
-       res.status(HttpStatus.METHOD_FAILURE).send();
-       return;
-    }
-    let userList = [];
-    let content = fileStream.readFileSync(userFile)
-    if(content.length > 0) {
-        userList = JSON.parse(content);
-    }
-   
+    let userList = getUsers();
     res.status(HttpStatus.OK).json(JSON.stringify(userList));
 })
 
@@ -135,15 +125,36 @@ function rollDice() {
 }
 
 
+
 function updateScore(playername, scoreField) {
     // read json file, get player with name or have a variable that contains current player
     // get scorefield field from player.score.ones etc. and swap value. Probably a switch case
 }
 
+function getUsers(){
+    if(!fileStream.existsSync(userFile)) {
+        //add something about why
+       res.status(HttpStatus.METHOD_FAILURE).send();
+       return;
+    }
+    let userList = [];
+    let content = fileStream.readFileSync(userFile)
+    console.log(content);
+    try {
+        userList = JSON.parse(content);
+        //there should always only be one, so we're just returning first.
+        return userList;
+    } catch(e) {
+        console.log("error reading json file " + e)
+    }
+
+    return userList;
+}
+
 function getUser(username) {
     if(!fileStream.existsSync(userFile)) {
         //add something about why
-        console.log("No file for players found")
+        console.log("No file for users found")
         return;
     }
     let userList = [];
@@ -153,7 +164,7 @@ function getUser(username) {
         //there should always only be one, so we're just returning first.
         return userList.filter((u)=> u.name === username)[0];
     } catch(e) {
-        console.log("error reading json file")
+        console.log("error reading json file" + e)
     }
 
     return null;
