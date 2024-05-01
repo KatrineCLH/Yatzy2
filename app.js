@@ -1,3 +1,24 @@
+import exp from "constants";
+import express from "express";
+import path from "path";
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+const app = express();
+const router = express .Router();
+const PORT = 3000;
+
+app.set('view engine', 'pug');
+app.set('views', './views')
+
+app.use(express.static("public"))
+
+app.get('/', function (req, res) {
+
+    res.render('yatzy');
+})
+
+
+
 //Variables used in the various functions
 //these two variables should be a dice class
 let diceHeld = [false, false, false, false, false];
@@ -340,4 +361,10 @@ function fillYatzy() {
     }
     field.value = result;
 }
-//Updates the scores, total and bonus feilds
+
+
+
+app.listen(PORT, function (err) {
+    if (err) console.log(err);
+    console.log("Server listening on PORT", PORT);
+});

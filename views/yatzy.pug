@@ -1,0 +1,66 @@
+doctype html
+html
+    head
+        title Yatzy for one
+        script(src="js/index.js", defer)
+        link(rel='stylesheet', type="text/css" href='/styles/yatzy.css')
+    body
+        #diceContainer
+            #diceDiv
+                img#die1(src="../DiceImages/dice-six-faces-one.png")
+                img#die2(src="../DiceImages/dice-six-faces-two.png")
+                img#die3(src="../DiceImages/dice-six-faces-three.png")
+                img#die4(src="../DiceImages/dice-six-faces-four.png")
+                img#die5(src="../DiceImages/dice-six-faces-five.png")
+            #rollDiv
+                div#turn Turn 0
+                button#rollButton Roll
+        #scoreBoard
+            .scoreBoardLeft
+                .scoreBoardLeftColumns#1
+                    label(for="1-s") 1-s
+                    label(for="2-s") 2-s
+                    label(for="3-s") 3-s
+                    label(for="4-s") 4-s
+                    label(for="5-s") 5-s
+                    label(for="6-s") 6-s
+                    label(for="One pair") One pair
+                    label(for="Two pairs") Two pairs
+                    label(for="Three same") Three same
+                    label(for="Four same") Four same
+                    label(for="Full house") Full house
+                    label(for="Small straight") Small straight
+                    label(for="Large straight") Large straight
+                    label(for="Chance") Chance
+                    label(for="Yatzy") Yatzy
+                .scoreBoardLeftColumns#2
+                    input(type="text", id="1-s", name="1-s", readonly)
+                    input(type="text", id="2-s", name="2-s", readonly)
+                    input(type="text", id="3-s", name="3-s", readonly)
+                    input(type="text", id="4-s", name="4-s", readonly)
+                    input(type="text", id="5-s", name="5-s", readonly)
+                    input(type="text", id="6-s", name="6-s", readonly)
+                    input(type="text", id="One pair", name="One pair", readonly)
+                    input(type="text", id="Two pairs", name="Two pairs", readonly)
+                    input(type="text", id="Three same", name="Three same", readonly)
+                    input(type="text", id="Four same", name="Four same", readonly)
+                    input(type="text", id="Full house", name="Full house", readonly)
+                    input(type="text", id="Small straight", name="Small straight", readonly)
+                    input(type="text", id="Large straight", name="Large straight", readonly)
+                    input(type="text", id="Chance", name="Chance", readonly)
+                    input(type="text", id="Yatzy", name="Yatzy", readonly)
+            .scoreBoardRight
+                .scoreBoardRightColumns#3
+                    .bigBlock
+                    .bigBlock
+                        label(for="Sum") Sum:
+                        input(type="text", id="Sum", name="Sum", readonly)
+                    .bigBlock
+                .scoreBoardRightColumns#rightMostBlock
+                    .bigBlock
+                    .bigBlock
+                        label(for="Bonus") Bonus:
+                        input(type="text", id="Bonus", name="Bonus", readonly)
+                    .bigBlock#total
+                        label(for="Total") Total:
+                        input(type="text", id="Total", name="Totalt", readonly)

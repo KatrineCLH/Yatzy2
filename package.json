@@ -1,7 +1,6 @@
 {
   "name": "yatzy2",
   "version": "1.0.0",
-  "description": "",
   "main": "yatzy.js",
   "type": "module",
   "license": "AGPL-version-3.0",
@@ -17,20 +16,21 @@
   },
   "bugs": "",
   "keywords": [],
-  "author": {
-    "name": "",
-    "email": "",
-    "url": ""
-  },
+  "author": "",
   "contributors": [],
   "scripts": {
     "dev": "",
-    "test": ""
+    "test": "",
+    "start": "nodemon app.js"
   },
   "dependencies": {
+    "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "node-fetch": "^3.3.2",
+    "nodemo": "^1.0.0",
+    "nodemon": "^3.1.0",
     "pug": "^3.0.2"
-  }
+  },
+  "description": ""
 }
