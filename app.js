@@ -10,21 +10,28 @@ const PORT = 3000;
 
 app.set('view engine', 'pug');
 app.set('views', './views')
-
 app.use(express.static("public"))
+
 
 app.get('/', function (req, res) {
 
     res.render('yatzy');
 })
 
-app.get('/game/rollbtn', function(req, res) {
-    rollDice();
-    let potentialScore = [1,2,3,4,5];
-    let result = { pot : potentialScore, dice:diceValues}
-    res.status(HttpStatus.ACCEPTED).json(result);
 
-})
+//REST CALLS UNDER HERE
+
+router.route('/game/rollbtn')
+    .get((req, res) => {
+        rollDice();
+        let potentialScore = [1, 2, 3, 4, 5]; // FIX to be calculated scores. Should only update NON-Locked fields
+        let result = { pot: potentialScore, dice: diceValues };
+        res.status(HttpStatus.ACCEPTED).json(result);
+    });
+
+//MUST BE AT THE BOTTOM OF ALL THE ROUTER CODE
+app.use('/rest', router);
+
 
 
 

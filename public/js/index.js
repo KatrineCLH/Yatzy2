@@ -50,7 +50,7 @@ window.onload = function () {
 function buttonRoll() {
     rollButton.disabled = true;
     //restcall to backend //TEST EXAMPLE
-    fetch("/game/rollbtn").then(response => {
+    fetch("rest/game/rollbtn").then(response => {
         if (!response.ok) {
             throw new Error("ain't working")
         }
@@ -127,6 +127,10 @@ function resetGame() {
 
 
 
+
+/* this part is not refactored */
+
+
 //Locks the choice of a field, called when the roll button is pressed
 function lockChoice() {
     for (let field of scores) {
@@ -142,9 +146,6 @@ function lockChoice() {
         }
     }
 }
-
-/* this part is not refactored */
-
 //This is the old resetGame function, left for posterity. As a reminder of how not to write code.
 function resetGame() {
     for (let field of scores) {
