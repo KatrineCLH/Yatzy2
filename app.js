@@ -1,4 +1,3 @@
-import exp from "constants";
 import express from "express";
 import path from "path";
 import HttpStatus from "http-status-codes";
@@ -169,7 +168,7 @@ function getUser(username) {
 
     return null;
 }
-
+//move to another file, export
 class Score {
     constructor() {
         this.ones
@@ -192,7 +191,7 @@ class Score {
         this.result
     }
 }
-
+//move to another file, export
 class Player {
     constructor(name) {
         this.score = new Score();
