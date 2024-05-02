@@ -25,8 +25,9 @@ app.get('/', function (req, res) {
 router.route('/game/rollbtn')
     .get((req, res) => {
         rollDice();
-        let potentialScore = [1, 2, 3, 4, 5]; // FIX to be calculated scores. Should only update NON-Locked fields
-        let result = { pot: potentialScore, dice: diceValues };
+        let player = new Player();
+        updateScores(player);
+        let result = { pot: player.score, dice: diceValues };
         res.status(HttpStatus.ACCEPTED).json(result);
     });
 
@@ -193,6 +194,7 @@ class Score {
         this.yatzy = {held: false, value: 0}
         this.total = {held: false, value: 0}
         this.sum = {held: false, value: 0}
+        this.bonus = {held: false, value: 0}
         this.result = {held: false, value: 0}
     }
 }
@@ -223,28 +225,28 @@ function updateScores(player) {
     fillChance(player);
     fillYatzy(player);
     fillSinglesSum(player);
-    fillTotal(player);
+    //fillTotal(player);
 }
 
 
 //Updates the sum of the singles fields
-function updateSinglesSum() {
+function fillSinglesSum(player) {
     let singleSum = 0;
-    let singles = document.getElementById("2").querySelectorAll("[id$='-s']");
+    let singles = [player.score.ones, player.score.twos, player.score.threes, player.score.fours, player.score.fives, player.score.sixes];
     for (let field of singles) {
-        if (field.disabled == true) {
+        if (field.held == true) {
             singleSum += parseInt(field.value);
         }
     }
 
-    document.getElementById("Sum").value = singleSum;
+    player.score.sum.value = singleSum;
     if (singleSum >= 63) {
         bonus = 50;
-        document.getElementById("Bonus").value = 50;
+        player.score.bonus.value = 50;
     }
 }
 //Updates the total field
-function updateTotal() {
+function fillTotal() {
     document.getElementById("Total").value = points + bonus;
 }
 

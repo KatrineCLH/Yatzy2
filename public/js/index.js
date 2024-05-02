@@ -10,7 +10,7 @@ rollButton.onclick = () => buttonRoll();
 //Window onload. Do all the variable stuff here
 window.onload = function () {
     //Extracting all input fields (scores)and attaching event clickers
-    scores = document.getElementById("2").querySelectorAll("input");
+    scores = document.querySelectorAll("input");
     for (let field of scores) {
         field.addEventListener("click", function () {
             if (turn != 0) {
@@ -57,19 +57,45 @@ function buttonRoll() {
 
         return response.json();
     }).then(data => {
+        console.log(data);
         for (let i = 0; i < dice.length; i++) {
             diceValues[i] = data.dice[i];
             dice[i].style.borderColor = "black";
         }
 
         updateDice();
-
+        console.log(scores);
         for (let i = 0; i < scores.length; i++) {
-            scores[i].value = data.pot[i];
+            scores[i].value = getValue(i, data.pot);
         }
     })
 
 
+}
+
+function getValue(i, score){
+    switch(i) {
+        case 0: return score.ones.value;
+        case 1: return score.twos.value;
+        case 2: return score.threes.value;
+        case 3: return score.fours.value;
+        case 4: return score.fives.value;
+        case 5: return score.sixes.value;
+        case 6: return score.onePair.value;
+        case 7: return score.twoPair.value;
+        case 8: return score.threeSame.value;
+        case 9: return score.fourSame.value;
+        case 10: return score.fullHouse.value;
+        case 11: return score.smallStraight.value;
+        case 12: return score.largeStraight.value;
+        case 13: return score.chance.value;
+        case 14: return score.yatzy.value;
+        case 15: return score.sum.value;
+        case 16: return score.bonus.value;
+        case 17: return score.total.value;
+        default: return 0;
+        
+    }
 }
 
 //Updates the dice images
