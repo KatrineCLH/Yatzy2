@@ -1,0 +1,19 @@
+body {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.col{
+    text-align: center;
+}
+
+#selectedUsers{
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    margin: 10px auto;
+}
+
+#selectedUsers td{
+    width: 100px;
+}

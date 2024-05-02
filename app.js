@@ -20,6 +20,9 @@ app.get('/', function (req, res) {
     res.render('yatzy');
 })
 
+app.get('/register', function (req, res) {
+    res.render('register')
+})
 
 //REST CALLS UNDER HERE
 
