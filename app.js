@@ -4,6 +4,7 @@ import HttpStatus from "http-status-codes";
 import fileStream from "fs";
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const userFile = "users.txt";
+const gameFile = "game.txt"
 
 const app = express();
 const router = express.Router();
@@ -13,7 +14,7 @@ app.set('view engine', 'pug');
 app.set('views', './views')
 app.use(express.static("public"))
 app.use(express.json());
-
+app.use(urlencoded({extended: true}))
 
 app.get('/', function (req, res) {
     res.render('yatzy');
@@ -68,11 +69,40 @@ router.route('/register')
 })
 
 router.route('/startGame')
-    .get((req, res) => {
+    .post((req, res) => {
+
+        if(!fileStream.existsSync(userFile)) {
+           res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
+           return;
+        }
+
+        let userList = req.body.users;
+
+
         //tager mod listen over de tilmeldte spillere
-        const users = JSON.parse(fileStream.accessSync('users'))
-        let players = users
-        
+        if (userList.length > 0) {
+
+            //gør gameStatus klar til afsending
+            gameStatus.turn = 0
+            gameStatus.isGameOngoing = true
+            gameStatus.currentPlayer = userList[0]
+            
+            //skriver til game.txt med spillende brugere og nuværende gameStatus
+            fileStream.writeFileSync(gameFile, JSON.stringify(new gameState(userList, gameStatus)), (err) => {
+                if (err) {
+                    let message = "tried to write " + user.name + ", to file but something went wrong"
+                    console.log(message)
+                    res.status(HttpStatus.METHOD_FAILURE).send(message)
+                    return;
+                }
+            })
+
+            res.status(HttpStatus.OK).send()
+            return;
+        }
+
+        res.status(HttpStatus.BAD_REQUEST).send("No users selected")
+        return;
     })
 
 router.route('/game/lockfield')
@@ -96,6 +126,9 @@ let diceValues = [0, 0, 0, 0, 0];
 let turn = 0;
 ///should be updated after every turn to next player in game.
 let currentPlayer;
+//Lucas: fields pertinent to gameStatus is now an object
+let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
+
 
 //Various functions used in the game
 function buttonRoll() {
@@ -203,6 +236,13 @@ class Player {
     constructor(name) {
         this.score = new Score();
         this.name = name;
+    }
+}
+
+class gameState {
+    constructor(playingUsers, currentGameState) {
+        this.players = playingUsers
+        this.gameState = currentGameState
     }
 }
 

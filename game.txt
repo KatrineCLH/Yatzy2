@@ -1,0 +1,1 @@
+{"players":[{"name":"hanss"},{"name":"iphans"}],"gameState":{"turn":0,"currentPlayer":{"name":"hanss"},"isGameOngoing":true}}
