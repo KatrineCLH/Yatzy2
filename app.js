@@ -1,20 +1,20 @@
-import exp from "constants";
 import express from "express";
 import path from "path";
 import HttpStatus from "http-status-codes";
 import fileStream from "fs";
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const userFile = "users.txt";
+const gameFile = "game.txt"
 
 const app = express();
-const router = express .Router();
+const router = express.Router();
 const PORT = 3000;
 
 app.set('view engine', 'pug');
 app.set('views', './views')
 app.use(express.static("public"))
 app.use(express.json());
-
+app.use(urlencoded({extended: true}))
 
 app.get('/', function (req, res) {
     res.render('yatzy');
@@ -29,8 +29,9 @@ app.get('/register', function (req, res) {
 router.route('/game/rollbtn')
     .get((req, res) => {
         rollDice();
-        let potentialScore = [1, 2, 3, 4, 5]; // FIX to be calculated scores. Should only update NON-Locked fields
-        let result = { pot: potentialScore, dice: diceValues };
+        let player = new Player();
+        updateScores(player);
+        let result = { pot: player.score, dice: diceValues };
         res.status(HttpStatus.ACCEPTED).json(result);
     });
 
@@ -70,7 +71,42 @@ router.route('/register')
     res.status(HttpStatus.OK).json(JSON.stringify(userList));
 })
 
+router.route('/startGame')
+    .post((req, res) => {
 
+        if(!fileStream.existsSync(userFile)) {
+           res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
+           return;
+        }
+
+        let userList = req.body.users;
+
+
+        //tager mod listen over de tilmeldte spillere
+        if (userList.length > 0) {
+
+            //gør gameStatus klar til afsending
+            gameStatus.turn = 0
+            gameStatus.isGameOngoing = true
+            gameStatus.currentPlayer = userList[0]
+            
+            //skriver til game.txt med spillende brugere og nuværende gameStatus
+            fileStream.writeFileSync(gameFile, JSON.stringify(new gameState(userList, gameStatus)), (err) => {
+                if (err) {
+                    let message = "tried to write " + user.name + ", to file but something went wrong"
+                    console.log(message)
+                    res.status(HttpStatus.METHOD_FAILURE).send(message)
+                    return;
+                }
+            })
+
+            res.status(HttpStatus.OK).send()
+            return;
+        }
+
+        res.status(HttpStatus.BAD_REQUEST).send("No users selected")
+        return;
+    })
 
 router.route('/game/lockfield')
     .post((req, res) => {
@@ -93,6 +129,9 @@ let diceValues = [0, 0, 0, 0, 0];
 let turn = 0;
 ///should be updated after every turn to next player in game.
 let currentPlayer;
+//Lucas: fields pertinent to gameStatus is now an object
+let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
+
 
 //Various functions used in the game
 function buttonRoll() {
@@ -174,24 +213,25 @@ function getUser(username) {
 
 class Score {
     constructor() {
-        this.ones
-        this.twos
-        this.threes
-        this.fours
-        this.fives
-        this.sixes
-        this.onePair
-        this.twoPair
-        this.threeSame
-        this.fourSame
-        this.fullHouse
-        this.smallStraight
-        this.largeStraight
-        this.chance
-        this.yatzy
-        this.total
-        this.sum
-        this.result
+        this.ones = {held: false, value: 0}
+        this.twos = {held: false, value: 0}
+        this.threes = {held: false, value: 0}
+        this.fours = {held: false, value: 0}
+        this.fives = {held: false, value: 0}
+        this.sixes = {held: false, value: 0}
+        this.onePair = {held: false, value: 0}
+        this.twoPair = {held: false, value: 0}
+        this.threeSame = {held: false, value: 0}
+        this.fourSame = {held: false, value: 0}
+        this.fullHouse = {held: false, value: 0}
+        this.smallStraight = {held: false, value: 0}
+        this.largeStraight = {held: false, value: 0}
+        this.chance = {held: false, value: 0}
+        this.yatzy = {held: false, value: 0}
+        this.total = {held: false, value: 0}
+        this.sum = {held: false, value: 0}
+        this.bonus = {held: false, value: 0}
+        this.result = {held: false, value: 0}
     }
 }
 
@@ -202,6 +242,13 @@ class Player {
     }
 }
 
+class gameState {
+    constructor(playingUsers, currentGameState) {
+        this.players = playingUsers
+        this.gameState = currentGameState
+    }
+}
+
 //move to another file, export
 class User {
     constructor(name) {
@@ -209,46 +256,46 @@ class User {
     }
 }
 /*  Fix this to fill a Score object instead and return that*/
-function updateScores() {
-    fillSingles();
-    fillOnePair();
-    fillTwoPairs();
-    fillThreeSame();
-    fillFourSame();
-    fillFullHouse();
-    fillSmallStraight();
-    fillLargeStraight();
-    fillChance();
-    fillYatzy();
-    updateSinglesSum();
-    updateTotal();
+function updateScores(player) {
+    fillSingles(player);
+    fillOnePair(player);
+    fillTwoPairs(player);
+    fillThreeSame(player);
+    fillFourSame(player);
+    fillFullHouse(player);
+    fillSmallStraight(player);
+    fillLargeStraight(player);
+    fillChance(player);
+    fillYatzy(player);
+    fillSinglesSum(player);
+    //fillTotal(player);
 }
 
 
 //Updates the sum of the singles fields
-function updateSinglesSum() {
+function fillSinglesSum(player) {
     let singleSum = 0;
-    let singles = document.getElementById("2").querySelectorAll("[id$='-s']");
+    let singles = [player.score.ones, player.score.twos, player.score.threes, player.score.fours, player.score.fives, player.score.sixes];
     for (let field of singles) {
-        if (field.disabled == true) {
+        if (field.held == true) {
             singleSum += parseInt(field.value);
         }
     }
 
-    document.getElementById("Sum").value = singleSum;
+    player.score.sum.value = singleSum;
     if (singleSum >= 63) {
         bonus = 50;
-        document.getElementById("Bonus").value = 50;
+        player.score.bonus.value = 50;
     }
 }
 //Updates the total field
-function updateTotal() {
+function fillTotal() {
     document.getElementById("Total").value = points + bonus;
 }
 
 
 /*Fill 1-s, 2-s, 3-s, 4-s, 5-s, 6-s fields*/
-function fillSingles() {
+function fillSingles(player) {
     let sumArray = [0, 0, 0, 0, 0, 0];
     for (const no of diceValues) {
         if (no == 1) {
@@ -271,27 +318,19 @@ function fillSingles() {
         }
     }
 
-    let one = document.getElementById("1-s");
-    let two = document.getElementById("2-s");
-    let three = document.getElementById("3-s");
-    let four = document.getElementById("4-s");
-    let five = document.getElementById("5-s");
-    let six = document.getElementById("6-s");
-
-    if (one.disabled == false) one.value = sumArray[0];
-    if (two.disabled == false) two.value = sumArray[1];
-    if (three.disabled == false) three.value = sumArray[2];
-    if (four.disabled == false) four.value = sumArray[3];
-    if (five.disabled == false) five.value = sumArray[4];
-    if (six.disabled == false) six.value = sumArray[5];
+    if (player.score.ones.held == false) player.score.ones.value = sumArray[0];
+    if (player.score.twos.held == false) player.score.twos.value = sumArray[1];
+    if (player.score.threes.held == false) player.score.threes.value = sumArray[2];
+    if (player.score.fours.held == false) player.score.fours.value = sumArray[3];
+    if (player.score.fives.held == false) player.score.fives.value = sumArray[4];
+    if (player.score.sixes.held == false) player.score.sixes.value = sumArray[5];
 }
 
 /*One pair*/
-function fillOnePair() {
-    let field = document.getElementById("One pair");
-    if (field.disabled == true) { return; }
+function fillOnePair(player) {
+    if (player.score.onePair.held == true) { return; }
 
-    let bestPair = 0;
+    let bestPair =  0;
     for (let i = diceValues.length - 1; i >= 1; i--) {
         for (let j = i - 1; j >= 0; j--) {
             if (diceValues[i] === diceValues[j] && bestPair < (2 * diceValues[i])) {
@@ -301,13 +340,12 @@ function fillOnePair() {
 
     }
 
-    field.value = bestPair;
+    player.score.onePair.value = bestPair;
 }
 
 /*Two pairs*/
-function fillTwoPairs() {
-    let field = document.getElementById("Two pairs");
-    if (field.disabled == true) { return; }
+function fillTwoPairs(player) {
+    if (player.score.twoPair.held == true) { return; }
 
     let kopi = [...diceValues];
     kopi.sort();
@@ -323,13 +361,12 @@ function fillTwoPairs() {
         result = 2 * kopi[0] + 2 * kopi[3];
     }
 
-    field.value = result;
+    player.score.twoPair.value = result;
 }
 
 /*Three same*/
-function fillThreeSame() {
-    let field = document.getElementById("Three same");
-    if (field.disabled == true) { return; }
+function fillThreeSame(player) {
+    if (player.score.threeSame.held == true) { return; }
 
     let kopi = [...diceValues];
     kopi.sort();
@@ -344,13 +381,12 @@ function fillThreeSame() {
     else if (kopi[2] === kopi[3] && kopi[3] === kopi[4]) {
         result = 3 * kopi[2];
     }
-    field.value = result;
+    player.score.threeSame.value = result;
 }
 
 /*Four same*/
-function fillFourSame() {
-    let field = document.getElementById("Four same");
-    if (field.disabled == true) { return; }
+function fillFourSame(player) {
+    if (player.score.fourSame.held == true) { return; }
 
     let kopi = [...diceValues];
     kopi.sort();
@@ -370,13 +406,12 @@ function fillFourSame() {
             }
         }
     }
-    field.value = result;
+    player.score.fourSame.value = result;
 }
 
 /*Full house*/
-function fillFullHouse() {
-    let field = document.getElementById("Full house");
-    if (field.disabled == true) { return; }
+function fillFullHouse(player) {
+    if (player.score.fullHouse.held == true) { return; }
 
     let kopi = [...diceValues];
     kopi.sort();
@@ -393,13 +428,12 @@ function fillFullHouse() {
         }
     }
 
-    field.value = result;
+    player.score.fullHouse.value = result;
 }
 
 /*Small straight*/
-function fillSmallStraight() {
-    let field = document.getElementById("Small straight");
-    if (field.disabled == true) { return; }
+function fillSmallStraight(player) {
+    if (player.score.smallStraight.held == true) { return; }
     let result = 0;
     let kopi = [...diceValues];
     kopi.sort();
@@ -414,13 +448,12 @@ function fillSmallStraight() {
             }
         }
     }
-    field.value = result;
+    player.score.smallStraight.value = result;
 }
 
 /*Large straight*/
-function fillLargeStraight() {
-    let field = document.getElementById("Large straight");
-    if (field.disabled == true) { return; }
+function fillLargeStraight(player) {
+    if (player.score.largeStraight.held == true) { return; }
     let result = 0;
     let kopi = [...diceValues];
     kopi.sort();
@@ -435,25 +468,23 @@ function fillLargeStraight() {
             }
         }
     }
-    field.value = result;
+    player.score.largeStraight.value = result;
 }
 
 /*Chance*/
-function fillChance() {
-    let field = document.getElementById("Chance");
-    if (field.disabled == true) { return; }
+function fillChance(player) {
+    if (player.score.chance.held == true) { return; }
     let sum = 0;
     for (const no of diceValues) {
-        sum += no
+        sum += no;
     }
 
-    field.value = sum
+    player.score.chance.value = sum;
 }
 
 /*Yatzy*/
-function fillYatzy() {
-    let field = document.getElementById("Yatzy");
-    if (field.disabled == true) { return; }
+function fillYatzy(player) {
+    if (player.score.yatzy.held == true) { return; }
 
     let result = 0;
     let isYatzy = true;
@@ -468,7 +499,7 @@ function fillYatzy() {
     if (isYatzy) {
         result = 50;
     }
-    field.value = result;
+    player.score.yatzy.value = result;
 }
 
 
