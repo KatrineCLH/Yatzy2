@@ -76,11 +76,10 @@ router.route('/startGame')
            return;
         }
 
-        console.log(req.body);
+        let userList = req.body.users;
+
 
         //tager mod listen over de tilmeldte spillere
-        let userList = JSON.parse(req.body)
-        console.log(userList);
         if (userList.length > 0) {
 
             //gør gameStatus klar til afsending
@@ -93,7 +92,7 @@ router.route('/startGame')
                 if (err) {
                     let message = "tried to write " + user.name + ", to file but something went wrong"
                     console.log(message)
-                    res.status(HttpStatus.METHOD_FAILURE).send(new Buffer(message))
+                    res.status(HttpStatus.METHOD_FAILURE).send(message)
                     return;
                 }
             })
