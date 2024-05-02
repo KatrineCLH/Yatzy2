@@ -67,7 +67,13 @@ router.route('/register')
     res.status(HttpStatus.OK).json(JSON.stringify(userList));
 })
 
-
+router.route('/startGame')
+    .get((req, res) => {
+        //tager mod listen over de tilmeldte spillere
+        const users = JSON.parse(fileStream.accessSync('users'))
+        let players = users
+        
+    })
 
 router.route('/game/lockfield')
     .post((req, res) => {
@@ -171,24 +177,24 @@ function getUser(username) {
 
 class Score {
     constructor() {
-        this.ones
-        this.twos
-        this.threes
-        this.fours
-        this.fives
-        this.sixes
-        this.onePair
-        this.twoPair
-        this.threeSame
-        this.fourSame
-        this.fullHouse
-        this.smallStraight
-        this.largeStraight
-        this.chance
-        this.yatzy
-        this.total
-        this.sum
-        this.result
+        this.ones = {held: false, value: 0}
+        this.twos = {held: false, value: 0}
+        this.threes = {held: false, value: 0}
+        this.fours = {held: false, value: 0}
+        this.fives = {held: false, value: 0}
+        this.sixes = {held: false, value: 0}
+        this.onePair = {held: false, value: 0}
+        this.twoPair = {held: false, value: 0}
+        this.threeSame = {held: false, value: 0}
+        this.fourSame = {held: false, value: 0}
+        this.fullHouse = {held: false, value: 0}
+        this.smallStraight = {held: false, value: 0}
+        this.largeStraight = {held: false, value: 0}
+        this.chance = {held: false, value: 0}
+        this.yatzy = {held: false, value: 0}
+        this.total = {held: false, value: 0}
+        this.sum = {held: false, value: 0}
+        this.result = {held: false, value: 0}
     }
 }
 

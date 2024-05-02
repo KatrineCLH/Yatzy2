@@ -1,0 +1,13 @@
+Lucas - 02/5
+    Alle tilmeldte Users skal blive Players
+    Fra registreringssidens liste over tilmeldte
+        Et endpoint i app.js, der tager imod denne liste af tilmeldte users og sætter spillet i gang.
+            Skal oprette en liste af Players
+                Gemme dem som JSON
+            Sætter et flag 'spil er i gang'
+            Sætte currentPlayer til første spiller i listen
+            Track hvem første spiller er og give turn videre til anden function.
+
+    class Score får for hver score et objekt med
+        {held: bool, value: int}
+    
