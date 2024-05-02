@@ -139,7 +139,6 @@ function getUsers(){
     }
     let userList = [];
     let content = fileStream.readFileSync(userFile)
-    console.log(content);
     try {
         userList = JSON.parse(content);
         //there should always only be one, so we're just returning first.
