@@ -57,7 +57,6 @@ function buttonRoll() {
 
         return response.json();
     }).then(data => {
-        console.log(data);
         for (let i = 0; i < dice.length; i++) {
             diceValues[i] = data.dice[i];
             dice[i].style.borderColor = "black";
