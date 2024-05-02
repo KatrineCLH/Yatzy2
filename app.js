@@ -76,8 +76,11 @@ router.route('/startGame')
            return;
         }
 
+        console.log(req.body);
+
         //tager mod listen over de tilmeldte spillere
-        let userList = JSON.parse(req.body.users)
+        let userList = JSON.parse(req.body)
+        console.log(userList);
         if (userList.length > 0) {
 
             //gør gameStatus klar til afsending
@@ -125,7 +128,7 @@ let turn = 0;
 ///should be updated after every turn to next player in game.
 let currentPlayer;
 //Lucas: fields pertinent to gameStatus is now an object
-let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: gameOver()}
+let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
 
 
 //Various functions used in the game
