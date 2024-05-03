@@ -46,8 +46,17 @@ function postChoice(element) {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({id: index})
-    }).then(function(res) {
-        return res.json();
+    }).then(async function(res) {
+        if(res.status === 200) {
+            return res.json();
+        }
+
+        if(res.status === 403){
+            let errText = await res.text();
+            alert(errText);
+        }
+        throw new Error ("Something went wrong");
+
     }).then(function(data) {
         console.log(data);
         for (let i = 0; i < scores.length; i++) {

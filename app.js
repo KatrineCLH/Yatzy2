@@ -16,9 +16,9 @@ app.use(express.static("public"))
 app.use(express.json());
 
 app.get('/', function (req, res) {
-    //test SLET
+    //test SLET når UI er done
     currentPlayer = new Player("okthen");
-
+    players = [currentPlayer, new Player("tester2")]
 
     res.render('yatzy', {name : currentPlayer});
 })
@@ -31,11 +31,10 @@ app.get('/register', function (req, res) {
 
 router.route('/game/rollbtn')
     .get((req, res) => {
+        if(firstRollDone === false) {
+            firstRollDone = true;
+        } 
         rollDice();
-        //test data, slet når register UI er done
-        players = [currentPlayer, new Player("tester2")]
-
-
         updateScores(currentPlayer);
         let result = { pot: currentPlayer.score, dice: diceValues };
         res.status(HttpStatus.ACCEPTED).json(result);
@@ -43,6 +42,11 @@ router.route('/game/rollbtn')
 
 router.route('/game/lockfield')
     .post((req, res) => {
+        if(firstRollDone === false) {
+            res.status(HttpStatus.FORBIDDEN).send("You must roll atleast once before locking in a choice.");
+            return;
+        }
+        firstRollDone = false;
         setHeld(req.body.id, currentPlayer);
         currentPlayer = getNextPlayer();
         res.status(HttpStatus.OK).json({player: currentPlayer, turn: turn });
@@ -136,7 +140,8 @@ app.use('/rest', router);
 let diceHeld = [false, false, false, false, false];
 let diceValues = [0, 0, 0, 0, 0];
 //keeps track of turn
-let turn = 0;
+let turn = 1;
+let firstRollDone = false;
 ///should be updated after every turn to next player in game.
 let currentPlayer;
 let players;
@@ -203,12 +208,17 @@ function setHeld(i, player){
 }
 
 function getNextPlayer() {
-    let index = [...players].indexOf(currentPlayer);
-    if(index === players.length-1 && turn < 16) {
+    let playerArr = [...players];
+    let index = playerArr.indexOf(currentPlayer);
+    //turn 16 denotes the end of the game as all players have picked their 15 fields.
+    //Add some handling that says game is over.
+
+    if(index === playerArr.length-1 && turn < 16) {
         turn++;
         index = -1
     }
-   return players[index +1]
+
+   return playerArr[index +1]
 }
 
 
