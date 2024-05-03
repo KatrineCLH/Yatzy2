@@ -19,7 +19,7 @@ app.get('/', function (req, res) {
     //test SLET
     currentPlayer = new Player("okthen");
 
-    
+
     res.render('yatzy', {name : currentPlayer});
 })
 
@@ -204,7 +204,7 @@ function setHeld(i, player){
 
 function getNextPlayer() {
     let index = [...players].indexOf(currentPlayer);
-    if(index === players.length-1) {
+    if(index === players.length-1 && turn < 16) {
         turn++;
         index = -1
     }
