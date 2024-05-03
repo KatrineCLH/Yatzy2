@@ -1,4 +1,5 @@
-let scores;
+let scores = [];
+let playerName;
 //Dice images
 let diceImages;
 let diceValues = [0, 0, 0, 0, 0];
@@ -12,19 +13,10 @@ window.onload = function () {
     //Extracting all input fields (scores)and attaching event clickers
     scores = document.querySelectorAll("input");
     for (let field of scores) {
-        field.addEventListener("click", function () {
-            if (turn != 0) {
-                if (field.style.backgroundColor != "lightblue") {
-                    for (let otherField of scores) {
-                        otherField.style.backgroundColor = "white";
-                    }
-                    field.style.backgroundColor = "lightblue";
-                    rollButton.disabled = false;
-                }
-                else {
-                    field.style.backgroundColor = "white";
-                }
-            }
+        field.addEventListener("click", function (e) {
+           if(turn != 0 && field.style.backgroundColor != 'lightblue'){
+                postChoice(e.target);
+           } 
         });
     }
 
@@ -44,6 +36,27 @@ window.onload = function () {
             }
         });
     }
+}
+
+function postChoice(element) {
+    let index = [...scores].indexOf(element);
+    fetch('rest/game/lockfield', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({id: index})
+    }).then(function(res) {
+        return res.json();
+    }).then(function(data) {
+        console.log(data);
+        for (let i = 0; i < scores.length; i++) {
+            scores[i].value = getValue(i, data.player.score);
+        }
+        document.getElementById('playerName').innerText ="Spiller: " + data.player.name;
+        turn = data.turn;
+        rollButton.disabled = false;
+    })
 }
 
 
@@ -155,8 +168,6 @@ function resetGame() {
 
 /* this part is not refactored */
 
-
-//Locks the choice of a field, called when the roll button is pressed
 function lockChoice() {
     for (let field of scores) {
         if (field.style.backgroundColor == "lightblue") {

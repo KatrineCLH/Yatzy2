@@ -14,10 +14,13 @@ app.set('view engine', 'pug');
 app.set('views', './views')
 app.use(express.static("public"))
 app.use(express.json());
-app.use(urlencoded({extended: true}))
 
 app.get('/', function (req, res) {
-    res.render('yatzy');
+    //test SLET
+    currentPlayer = new Player("okthen");
+
+    
+    res.render('yatzy', {name : currentPlayer});
 })
 
 app.get('/register', function (req, res) {
@@ -29,11 +32,21 @@ app.get('/register', function (req, res) {
 router.route('/game/rollbtn')
     .get((req, res) => {
         rollDice();
-        let player = new Player();
-        updateScores(player);
-        let result = { pot: player.score, dice: diceValues };
+        //test data, slet når register UI er done
+        players = [currentPlayer, new Player("tester2")]
+
+
+        updateScores(currentPlayer);
+        let result = { pot: currentPlayer.score, dice: diceValues };
         res.status(HttpStatus.ACCEPTED).json(result);
     });
+
+router.route('/game/lockfield')
+    .post((req, res) => {
+        setHeld(req.body.id, currentPlayer);
+        currentPlayer = getNextPlayer();
+        res.status(HttpStatus.OK).json({player: currentPlayer, turn: turn });
+    })
 
 router.route('/register')
     .post((req, res) => {
@@ -80,7 +93,8 @@ router.route('/startGame')
         }
 
         let userList = req.body.users;
-
+        userList.sort()
+        userList.foreach(x => players.push(new Player()))
 
         //tager mod listen over de tilmeldte spillere
         if (userList.length > 0) {
@@ -91,7 +105,7 @@ router.route('/startGame')
             gameStatus.currentPlayer = userList[0]
             
             //skriver til game.txt med spillende brugere og nuværende gameStatus
-            fileStream.writeFileSync(gameFile, JSON.stringify(new gameState(userList, gameStatus)), (err) => {
+            fileStream.writeFileSync(gameFile, JSON.stringify(new gameState(players, gameStatus)), (err) => {
                 if (err) {
                     let message = "tried to write " + user.name + ", to file but something went wrong"
                     console.log(message)
@@ -99,6 +113,8 @@ router.route('/startGame')
                     return;
                 }
             })
+            
+            
 
             res.status(HttpStatus.OK).send()
             return;
@@ -106,12 +122,6 @@ router.route('/startGame')
 
         res.status(HttpStatus.BAD_REQUEST).send("No users selected")
         return;
-    })
-
-router.route('/game/lockfield')
-    .post((req, res) => {
-        data = req.body;
-
     })
 
 //MUST BE AT THE BOTTOM OF ALL THE ROUTER CODE
@@ -129,6 +139,7 @@ let diceValues = [0, 0, 0, 0, 0];
 let turn = 0;
 ///should be updated after every turn to next player in game.
 let currentPlayer;
+let players;
 //Lucas: fields pertinent to gameStatus is now an object
 let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
 
@@ -166,6 +177,39 @@ function rollDice() {
     }
 }
 
+function setHeld(i, player){
+    switch(i) {
+        case 0: return player.score.ones.held = true;
+        case 1: return player.score.twos.held = true;
+        case 2: return player.score.threes.held = true;
+        case 3: return player.score.fours.held = true;
+        case 4: return player.score.fives.held = true;
+        case 5: return player.score.sixes.held = true;
+        case 6: return player.score.onePair.held = true;
+        case 7: return player.score.twoPair.held = true;
+        case 8: return player.score.threeSame.held = true;
+        case 9: return player.score.fourSame.held = true;
+        case 10: return player.score.fullHouse.held = true;
+        case 11: return player.score.smallStraight.held = true;
+        case 12: return player.score.largeStraight.held = true;
+        case 13: return player.score.chance.held = true;
+        case 14: return player.score.yatzy.held = true;
+        case 15: return player.score.sum.held = true;
+        case 16: return player.score.bonus.held = true;
+        case 17: return player.score.total.held = true;
+        default: return 0;
+        
+    }
+}
+
+function getNextPlayer() {
+    let index = [...players].indexOf(currentPlayer);
+    if(index === players.length-1) {
+        turn++;
+        index = -1
+    }
+   return players[index +1]
+}
 
 
 function updateScore(playername, scoreField) {
