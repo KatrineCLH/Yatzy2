@@ -58,7 +58,6 @@ function postChoice(element) {
         throw new Error ("Something went wrong");
 
     }).then(function(data) {
-        console.log(data);
         for (let i = 0; i < scores.length; i++) {
             const score = getScore(i, data.player.score);
             scores[i].value = score.value;
@@ -150,99 +149,3 @@ function updateDice() {
         }
     }
 }
-
-function resetGame() {
-    for (let field of scores) {
-        field.style.backgroundColor = "white";
-        field.disabled = false;
-        field.value = "";
-    }
-
-    for (let i = 0; i < dice.length; i++) {
-        diceValues[i] = 0;
-        diceHeld[i] = false;
-        dice[i].style.borderColor = "black"
-    }
-
-    dice[0].src = "dice-six-faces-one.png";
-    dice[1].src = "dice-six-faces-two.png";
-    dice[2].src = "dice-six-faces-three.png";
-    dice[3].src = "dice-six-faces-four.png";
-    dice[4].src = "dice-six-faces-five.png";
-
-
-    rollButton.disabled = false;
-}
-
-
-
-
-
-
-
-/* this part is not refactored */
-
-function lockChoice() {
-    for (let field of scores) {
-        if (field.style.backgroundColor == "lightblue") {
-            field.style.backgroundColor = "white";
-            field.disabled = true;
-            points += parseInt(field.value);
-            for (let i = 0; i < dice.length; i++) {
-                dice[i].style.borderColor = "black";
-                diceHeld[i] = false;
-            }
-            turn = 0;
-        }
-    }
-}
-//This is the old resetGame function, left for posterity. As a reminder of how not to write code.
-function resetGame() {
-    for (let field of scores) {
-        field.style.backgroundColor = "white";
-        field.disabled = false;
-        field.value = "";
-    }
-
-    for (let i = 0; i < dice.length; i++) {
-        diceValues[i] = 0;
-        diceHeld[i] = false;
-        dice[i].style.borderColor = "black"
-    }
-
-    dice[0].src = "dice-six-faces-one.png";
-    dice[1].src = "dice-six-faces-two.png";
-    dice[2].src = "dice-six-faces-three.png";
-    dice[3].src = "dice-six-faces-four.png";
-    dice[4].src = "dice-six-faces-five.png";
-
-    turn = 0;
-    points = 0;
-    bonus = 0;
-    document.getElementById("turn").innerText = "Turn " + turn;
-    document.getElementById("Sum").value = "";
-    document.getElementById("Bonus").value = "";
-    document.getElementById("Total").value = "";
-
-    rollButton.disabled = false;
-}
-
-//New game confirmation box
-function newGameConfimation() {
-    let total = document.getElementById("Total").value;
-    if (confirm("Game over, you got " + total + " points. Do you want to play again?") == true) {
-        location.reload();
-    }
-}
-
-//Checks if the game is over
-function gameOver() {
-    for (let field of scores) {
-        if (field.disabled == false) {
-            return false;
-        }
-    }
-    return true;
-}
-
-
