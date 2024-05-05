@@ -3,6 +3,7 @@ let scores = [];
 let diceImages;
 let diceValues = [0, 0, 0, 0, 0];
 let prevPlayerLI;
+let turn = 0;
 //Roll button for dice
 let rollButton = document.getElementById("rollButton");
 rollButton.onclick = () => buttonRoll();
@@ -45,6 +46,16 @@ window.onload = function () {
         });
     }
 }
+function toggleLight(index) {
+    var light = document.getElementsByClassName("sphere")[index - 1];
+    console.log(light);
+    if (light.classList.contains("green")) {
+      light.classList.remove("green");
+      light.classList.add("red");
+    } 
+
+
+}
 
 function postChoice(element) {
     let index = [...scores].indexOf(element);
@@ -80,6 +91,7 @@ function postChoice(element) {
         newPlayerLI.style.transform = 'scale(1.10)';
         prevPlayerLI = newPlayerLI;
         turn = data.turn;
+        toggleLight(turn);
         rollButton.disabled = false;
     })
 }

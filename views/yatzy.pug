@@ -70,3 +70,8 @@ html
                             .bigBlock#total
                                 label(for="Total") Total:
                                 input(type="text", id="Total", name="Totalt", readonly)
+            #ul.turn
+                each val in Array.from({length: 15}, (_, i) => i + 1)
+                    li
+                        div.sphere.green
+                        | Turn #{val}
