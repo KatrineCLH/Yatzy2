@@ -22,7 +22,6 @@ app.get('/', function (req, res) {
         res.render('error', {error: "No game started. Go to /register to start game."});
         return;
     }
-    console.log(file);
 
     currentPlayer = file.gameState.currentPlayer;
     players = file.players;
@@ -54,7 +53,9 @@ router.route('/game/lockfield')
         }
         firstRollDone = false;
         setHeld(req.body.id, currentPlayer);
+        console.log("old player " +currentPlayer.name)
         currentPlayer = getNextPlayer();
+        console.log("new player " +currentPlayer.name)
         res.status(HttpStatus.OK).json({player: currentPlayer, turn: turn });
     })
 
@@ -114,7 +115,7 @@ router.route('/startGame')
             //gør gameStatus klar til afsending
             gameStatus.turn = 0
             gameStatus.isGameOngoing = true
-            gameStatus.currentPlayer = userList[0]
+            gameStatus.currentPlayer = players[0]
             
             //skriver til game.txt med spillende brugere og nuværende gameStatus
             fileStream.writeFileSync(gameFile, JSON.stringify(new gameState(players, gameStatus)), (err) => {
@@ -205,10 +206,9 @@ function setHeld(i, player){
 
 function getNextPlayer() {
     let playerArr = [...players];
-    let index = playerArr.indexOf(currentPlayer);
+    let index = playerArr.findIndex(p => p.name == currentPlayer.name);
     //turn 16 denotes the end of the game as all players have picked their 15 fields.
     //Add some handling that says game is over.
-
     if(index === playerArr.length-1 && turn < 16) {
         turn++;
         index = -1
