@@ -1,23 +1,25 @@
 doctype html
-html(lang="en")
+html
     head
         title Register for Yatzy
         script(src="js/register.js", defer)
         link(rel='stylesheet', type="text/css" href='/styles/register.css')
     body 
-        #makeSide.col
-            h2 Register user
-            input(id="inputUser" list="users")
-            datalist(id="users") Users 
-                option(value="hej")
-                option(value="dav")
-                option(value="hallo")
-            button(id="addButton") Add
-        #chosenSide.col 
-            h2 Selected users
-            table(id="selectedUsers")
-                tr
-                    td Hej 
-                tr 
-                    td Dav
-            button(id="startButton") Start game
+        include navbar.pug
+        #container.container
+            #makeSide.col-left
+                h2 Register user
+                input(id="inputUser" list="users")
+                datalist(id="users") Users 
+                    option(value="hej")
+                    option(value="dav")
+                    option(value="hallo")
+                button(id="addButton") Add
+            #chosenSide.col-right
+                h2 Selected users
+                table(id="selectedUsers")
+                    tr
+                        td Hej 
+                    tr 
+                        td Dav
+                button(id="startButton") Start game
