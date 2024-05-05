@@ -1,13 +1,10 @@
 body {
-    
-
-    background: rgb(21,17,82);
-    background: linear-gradient(90deg, rgba(21,17,82,1) 0%, rgba(50,96,209,1) 42%, rgba(108,29,238,1) 100%);
+    background:#C0C0C0;
 }
 
 #container {
     display: grid;
-    grid-template-columns:  20% 80%;
+    grid-template-columns:  20% 80%;    
 }
 
 #content {
@@ -16,11 +13,9 @@ body {
 
 #diceContainer {
     width: 50%;
-    height: 300px;
+    height: auto;
     margin: auto;
     padding: 10px;
-
-
     display: grid;
     grid-template-rows: 50% 50%;
     grid-gap: 10px;
@@ -33,14 +28,11 @@ body {
     grid-template-columns: 20% 20% 20% 20% 20%;
 }
 #rollDiv {
-    display: grid;
-    grid-template-columns: 50% 50%;
-    grid-gap: 10px;
-    padding: 20px;
+
 }
 img {
-    width: 100px;
-    height: 100px;
+    width: 75px;
+    height: 75px;
     margin: 10px;
     border-radius: 10px;
     border-style: solid;
@@ -191,24 +183,24 @@ label {
 	--clr_accent: #fb6767;
 }
 .ol-players > li:nth-child(6n + 2) {
-	--clr_bg: #47505f;
+	--clr_bg: #2e2b3c;
 	--clr_accent: #c14755;
 }
 .ol-players > li:nth-child(6n + 3) {
-	--clr_bg: #37aa8d;
+	--clr_bg: #2e2b3c;
 	--clr_accent: #a1cc6f;
 }
 .ol-players > li:nth-child(6n + 4) {
-	--clr_bg: #8fb568;
+	--clr_bg: #2e2b3c;
 	--clr_accent: #566574;
 }
 .ol-players > li:nth-child(6n + 5) {
-	--clr_bg: #24b8b8;
+	--clr_bg: #2e2b3c;
 	--clr_accent: #c4b36a;
 }
 .ol-players > li:nth-child(6n + 6) {
-	--clr_bg: #fc6868;
-	--clr_accent: #2e2b3c;
+	--clr_bg: #2e2b3c;
+	--clr_accent: #2e1f72;
 }
 
 .glow-button {

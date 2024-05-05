@@ -21,7 +21,8 @@ window.onload = function () {
     scores = document.querySelectorAll("input");
     for (let field of scores) {
         field.addEventListener("click", function (e) {
-           if(turn != 0 && field.style.backgroundColor != 'lightblue'){
+            //if turn != 0
+           if( field.style.backgroundColor != 'lightblue'){
                 postChoice(e.target);
            } 
         });
@@ -32,7 +33,7 @@ window.onload = function () {
     document.getElementById('die4'), document.getElementById('die5')];
     for (let i = 0; i < dice.length; i++) {
         dice[i].addEventListener("click", function () {
-            if (turn != 0) {
+            /*if (turn != 0) {
                 diceHeld[i] = !diceHeld[i];
             }
             if (diceHeld[i]) {
@@ -40,7 +41,7 @@ window.onload = function () {
             }
             else {
                 dice[i].style.borderColor = "black"
-            }
+            }*/
         });
     }
 }
