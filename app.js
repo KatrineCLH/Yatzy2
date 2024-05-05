@@ -16,17 +16,17 @@ app.use(express.static("public"))
 app.use(express.json());
 
 app.get('/', function (req, res) {
-    //test SLET når UI er done
-    currentPlayer = new Player("okthen");
-    players = [currentPlayer, new Player("Andreas"), new Player("Katrine"), new Player("Lucas"), new Player("Hans"), new Player("King of the wolrd"),new Player("Frontend G")]
-
     const file = getGameFile();
-    if(file.gameState.isGameOngoing === false) {
+
+    if(file === null || file.gameState.isGameOngoing === false) {
         res.render('error', {error: "No game started. Go to /register to start game."});
         return;
     }
+    console.log(file);
 
-    res.render('yatzy', {name : currentPlayer, players: players});
+    currentPlayer = file.gameState.currentPlayer;
+    players = file.players;
+    res.render('yatzy', {name : currentPlayer.name, players: players});
 })
 
 app.get('/register', function (req, res) {
@@ -101,10 +101,12 @@ router.route('/startGame')
            res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
            return;
         }
-
-        let userList = req.body.users;
+        let userList = req.body.users
         userList.sort()
-        userList.foreach(x => players.push(new Player()))
+        for(const u of userList) {
+            players.push(new Player(u.name))
+        }
+
 
         //tager mod listen over de tilmeldte spillere
         if (userList.length > 0) {
@@ -150,7 +152,7 @@ let turn = 1;
 let firstRollDone = false;
 ///should be updated after every turn to next player in game.
 let currentPlayer;
-let players;
+let players = [];
 //Lucas: fields pertinent to gameStatus is now an object
 let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
 
