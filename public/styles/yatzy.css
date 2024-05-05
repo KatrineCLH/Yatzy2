@@ -1,5 +1,8 @@
 body {
-    background-image: url(../background/RR-v-jan-2019-135.jpg);
+    
+
+    background: rgb(21,17,82);
+    background: linear-gradient(90deg, rgba(21,17,82,1) 0%, rgba(50,96,209,1) 42%, rgba(108,29,238,1) 100%);
 }
 
 #container {
@@ -16,8 +19,7 @@ body {
     height: 300px;
     margin: auto;
     padding: 10px;
-    background: rgb(21,17,82);
-    background: linear-gradient(90deg, rgba(21,17,82,1) 0%, rgba(50,96,209,1) 42%, rgba(108,29,238,1) 100%);
+
 
     display: grid;
     grid-template-rows: 50% 50%;
@@ -62,8 +64,7 @@ img {
     width: 50%;
     margin: auto;
     padding: 10px;
-    background: rgb(21,17,82);
-    background: linear-gradient(90deg, rgba(21,17,82,1) 0%, rgba(50,96,209,1) 42%, rgba(108,29,238,1) 100%);
+
 
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -222,7 +223,7 @@ label {
 
 
 /* CSS */
-.button-85 {
+.glow-button {
   padding: 0.6em 2em;
   border: none;
   outline: none;
@@ -237,7 +238,7 @@ label {
   touch-action: manipulation;
 }
 
-.button-85:before {
+.glow-button:before {
   content: "";
   background: linear-gradient(
     45deg,
@@ -260,12 +261,12 @@ label {
   -webkit-filter: blur(5px);
   width: calc(100% + 4px);
   height: calc(100% + 4px);
-  animation: glowing-button-85 20s linear infinite;
+  animation: glowing-glow-button 20s linear infinite;
   transition: opacity 0.3s ease-in-out;
   border-radius: 10px;
 }
 
-@keyframes glowing-button-85 {
+@keyframes glowing-glow-button {
   0% {
     background-position: 0 0;
   }
@@ -277,7 +278,7 @@ label {
   }
 }
 
-.button-85:after {
+.glow-button:after {
   z-index: -1;
   content: "";
   position: absolute;
