@@ -168,29 +168,6 @@ function getGameFile() {
 }
 
 
-//Various functions used in the game
-function buttonRoll() {
-    if (gameOver()) {
-        newGameConfimation();
-        return;
-    }
-    lockChoice();
-    rollDice();
-    updateDice();
-    updateScores();
-
-    turn++; //TODO: fix this to be on after last player.
-
-
-    document.getElementById("turn").innerText = "Turn " + turn;
-    if (turn == 3) {
-        rollButton.disabled = true;
-        for (let i = 0; i < dice.length; i++) {
-            dice[i].style.borderColor = "black";
-            diceHeld[i] = false;
-        }
-    }
-}
 
 //Rolls the dice
 function rollDice() {
