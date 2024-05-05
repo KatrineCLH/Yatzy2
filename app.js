@@ -18,9 +18,15 @@ app.use(express.json());
 app.get('/', function (req, res) {
     //test SLET når UI er done
     currentPlayer = new Player("okthen");
-    players = [currentPlayer, new Player("tester2")]
+    players = [currentPlayer, new Player("Andreas"), new Player("Katrine"), new Player("Lucas"), new Player("Hans"), new Player("King of the wolrd"),new Player("Frontend G")]
 
-    res.render('yatzy', {name : currentPlayer});
+    const file = getGameFile();
+    if(file.gameState.isGameOngoing === false) {
+        res.render('error', {error: "No game started. Go to /register to start game."});
+        return;
+    }
+
+    res.render('yatzy', {name : currentPlayer, players: players});
 })
 
 app.get('/register', function (req, res) {
@@ -147,6 +153,17 @@ let currentPlayer;
 let players;
 //Lucas: fields pertinent to gameStatus is now an object
 let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
+
+
+function getGameFile() {
+    try {
+      return JSON.parse(fileStream.readFileSync(gameFile));
+    }
+    catch{
+        return null;
+    }
+
+}
 
 
 //Various functions used in the game

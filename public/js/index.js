@@ -1,16 +1,23 @@
 let scores = [];
-let playerName;
 //Dice images
 let diceImages;
 let diceValues = [0, 0, 0, 0, 0];
+let prevPlayerLI;
 //Roll button for dice
 let rollButton = document.getElementById("rollButton");
 rollButton.onclick = () => buttonRoll();
 
 
+
 //Window onload. Do all the variable stuff here
 window.onload = function () {
     //Extracting all input fields (scores)and attaching event clickers
+
+    //setting first player to be first move.
+    prevPlayerLI = document.querySelector('li');
+    prevPlayerLI.style.transform = 'scale(1.10)';
+
+
     scores = document.querySelectorAll("input");
     for (let field of scores) {
         field.addEventListener("click", function (e) {
@@ -67,7 +74,10 @@ function postChoice(element) {
                 scores[i].style.backgroundColor = 'white';
             }
         }
-        document.getElementById('playerName').innerText ="Spiller: " + data.player.name;
+        prevPlayerLI.style.transform = 'scale(1)';
+        let newPlayerLI =  document.getElementById(data.player.name);
+        newPlayerLI.style.transform = 'scale(1.10)';
+        prevPlayerLI = newPlayerLI;
         turn = data.turn;
         rollButton.disabled = false;
     })
@@ -84,14 +94,12 @@ function buttonRoll() {
 
         return response.json();
     }).then(data => {
-        console.log(data);
         for (let i = 0; i < dice.length; i++) {
             diceValues[i] = data.dice[i];
             dice[i].style.borderColor = "black";
         }
 
         updateDice();
-        console.log(scores);
         for (let i = 0; i < scores.length; i++) {
             scores[i].value = getScore(i, data.pot).value;
         }
