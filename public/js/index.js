@@ -14,7 +14,7 @@ window.onload = function () {
     //Extracting all input fields (scores)and attaching event clickers
 
     //setting first player to be first move.
-    prevPlayerLI = document.querySelector('li');
+    prevPlayerLI = document.querySelector('ol li');
     prevPlayerLI.style.transform = 'scale(1.10)';
 
 

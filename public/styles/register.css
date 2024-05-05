@@ -3,6 +3,10 @@
     grid-template-columns: repeat(2);
 }
 
+body {
+    background: #C0C0C0;
+}
+
 .col-left {
     text-align: center;
     grid-column: 1;
@@ -14,6 +18,7 @@
 }
 
 #selectedUsers{
+    background: white;
     border-style: solid;
     border-color: black;
     border-width: 1px;
