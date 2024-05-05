@@ -53,9 +53,7 @@ router.route('/game/lockfield')
         }
         firstRollDone = false;
         setHeld(req.body.id, currentPlayer);
-        console.log("old player " +currentPlayer.name)
         currentPlayer = getNextPlayer();
-        console.log("new player " +currentPlayer.name)
         res.status(HttpStatus.OK).json({player: currentPlayer, turn: turn });
     })
 
