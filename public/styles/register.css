@@ -17,3 +17,7 @@ body {
 #selectedUsers td{
     width: 100px;
 }
+
+#warning{
+    display: none;
+}

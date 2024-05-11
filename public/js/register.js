@@ -7,11 +7,13 @@ window.onload = function (){
     dropDown = document.getElementById('users')
     populateDropDown(dropDown)
 
+    let warning = document.getElementById("warning")
+
     document.getElementById("addButton").onclick = function (){
         //read who user is trying to add to game
         let fieldInput = document.getElementById("inputUser").value;
         let user = {name: fieldInput}
-        console.log(fieldInput);
+        //console.log(fieldInput);
 
         //make list of current gamers
         let chosenGamers = document.querySelectorAll("td")
@@ -23,33 +25,35 @@ window.onload = function (){
 
         //if inputted name is not already a gamer, add name to gamer list
         if (!cleanGamers.includes(user.name)){
+            let addResponse = addUser(user)
+            if (addResponse === 200){
+                let option = document.createElement("option")
+                option.value = user.name
+                dropDown.appendChild(option)
+            }
             let selectedTable = document.getElementById("selectedUsers");
             let newRow = selectedTable.insertRow(-1);
             let newCell = newRow.insertCell(-1);
             newCell.innerHTML = fieldInput
-            addUser(user)
+            warning.style.display = "none"
+        }
+        else{
+            warning.style.display = "block"
+            warning.style.color = "red"
         }
     }
 }
 
 function addUser(user){
     //use post in app.js
-    const postData = {
+    let postData = {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify(user)
     }
-    fetch("rest/register", postData).then(response =>{
-        //if user was successfully added to file, then append name in gamers on screen
-        if(response.ok){
-            let option = document.createElement("option")
-            option.value = user.name
-            dropDown.appendChild(option)
-        }
-    }
-    )
+    fetch("rest/register", postData).then(response => response.status)
 }
 
 function populateDropDown(dropDown){
