@@ -10,24 +10,10 @@ html
             #makeSide.col-left
                 h2 Register user
                 input(id="inputUser" list="users")
-                datalist(id="users") Users 
-
+                datalist(id="users") Users
                 button(id="addButton") Add
+                h3(id="warning") User already chosen for game
             #chosenSide.col-right
                 h2 Selected users
                 table(id="selectedUsers")
-                    tr
-                        td Hej 
-                    tr 
-                        td Dav
                 button(id="startButton") Start game
-        #makeSide.col
-            h2 Register user
-            input(id="inputUser" list="users")
-            datalist(id="users") Users
-            button(id="addButton") Add
-            h3(id="warning") User already chosen for game
-        #chosenSide.col 
-            h2 Selected users
-            table(id="selectedUsers")
-            button(id="startButton") Start game
