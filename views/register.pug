@@ -11,9 +11,7 @@ html
                 h2 Register user
                 input(id="inputUser" list="users")
                 datalist(id="users") Users 
-                    option(value="hej")
-                    option(value="dav")
-                    option(value="hallo")
+
                 button(id="addButton") Add
             #chosenSide.col-right
                 h2 Selected users
@@ -23,3 +21,13 @@ html
                     tr 
                         td Dav
                 button(id="startButton") Start game
+        #makeSide.col
+            h2 Register user
+            input(id="inputUser" list="users")
+            datalist(id="users") Users
+            button(id="addButton") Add
+            h3(id="warning") User already chosen for game
+        #chosenSide.col 
+            h2 Selected users
+            table(id="selectedUsers")
+            button(id="startButton") Start game

@@ -61,12 +61,14 @@ router.route('/register')
     .post((req, res) => {
     let user = new User(req.body.name);
 
+    //If no user file?
     if(!fileStream.existsSync(userFile)) {
         //add something about why
        res.status(HttpStatus.METHOD_FAILURE).send();
        return;
     }
 
+    //If content in user file, then make list of users and make sure user doesn't already exist
     let content = fileStream.readFileSync(userFile)
     let userList = [];
     if(content.length > 0) {
@@ -78,6 +80,7 @@ router.route('/register')
         }
     }
 
+    //User doesn't exist, then add user to list. Add list to file
     userList.push(user)
     fileStream.writeFile(userFile, JSON.stringify(userList), function(err) {
         if(err) {
@@ -97,8 +100,8 @@ router.route('/startGame')
     .post((req, res) => {
 
         if(!fileStream.existsSync(userFile)) {
-           res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
-           return;
+        res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
+        return;
         }
         let userList = req.body.users
         userList.sort()
