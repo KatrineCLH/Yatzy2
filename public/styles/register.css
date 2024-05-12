@@ -12,10 +12,8 @@ body {
     border-color: black;
     border-width: 1px;
     margin: 10px auto;
-}
-
-#selectedUsers td{
-    width: 100px;
+    min-height: 20px;
+    width: 200px;
 }
 
 #warning{

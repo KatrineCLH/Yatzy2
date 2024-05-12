@@ -1,7 +1,5 @@
-//import { response } from "express"
-//import { add } from "nodemon"
-
 let dropDown
+let gamerList = []
 
 window.onload = function (){
     dropDown = document.getElementById('users')
@@ -15,32 +13,27 @@ window.onload = function (){
         let user = {name: fieldInput}
         //console.log(fieldInput);
 
-        //make list of current gamers
-        let chosenGamers = document.querySelectorAll("td")
-        let cleanGamers = []
-
-        for (const gamer of chosenGamers) {
-            cleanGamers.push(gamer.innerText)
-        }
-
         //if inputted name is not already a gamer, add name to gamer list
-        if (!cleanGamers.includes(user.name)){
-            let addResponse = addUser(user)
-            if (addResponse === 200){
-                let option = document.createElement("option")
-                option.value = user.name
-                dropDown.appendChild(option)
-            }
-            let selectedTable = document.getElementById("selectedUsers");
-            let newRow = selectedTable.insertRow(-1);
-            let newCell = newRow.insertCell(-1);
-            newCell.innerHTML = fieldInput
-            warning.style.display = "none"
+        if (!gamerList.map(gamer => gamer.name).includes(user.name)){
+            addUser(user)
         }
         else{
             warning.style.display = "block"
             warning.style.color = "red"
         }
+
+        //console.log(gamerList);
+    }
+
+    document.getElementById("startButton").onclick = function (){
+        let postUsers = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(gamerList)
+        }
+        fetch("rest/startGame", postUsers).then(response => console.log(response))
     }
 }
 
@@ -53,7 +46,20 @@ function addUser(user){
         },
         body: JSON.stringify(user)
     }
-    fetch("rest/register", postData).then(response => response.status)
+    fetch("rest/register", postData).then(response => {
+        if (response.ok){
+            let option = document.createElement("option")
+            option.value = user.name
+            dropDown.appendChild(option)
+        }
+        let selectedTable = document.getElementById("selectedUsers");
+        let newRow = selectedTable.insertRow(-1);
+        let newCell = newRow.insertCell(-1);
+        newCell.innerHTML = user.name
+        gamerList.push(user)
+        warning.style.display = "none"
+        document.getElementById("inputUser").value = ""
+    })
 }
 
 function populateDropDown(dropDown){
