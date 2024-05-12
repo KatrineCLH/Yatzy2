@@ -95,13 +95,15 @@ router.route('/startGame')
     .post((req, res) => {
 
         if(!fileStream.existsSync(userFile)) {
-           res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
-           return;
+        res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
+        return;
+        }
+        let userList = req.body.users
+        userList.sort()
+        for(const u of userList) {
+            players.push(new Player(u.name))
         }
 
-        let userList = req.body.users;
-        userList.sort()
-        userList.foreach(x => players.push(new Player()))
 
         //tager mod listen over de tilmeldte spillere
         if (userList.length > 0) {
@@ -109,7 +111,7 @@ router.route('/startGame')
             //gør gameStatus klar til afsending
             gameStatus.turn = 0
             gameStatus.isGameOngoing = true
-            gameStatus.currentPlayer = userList[0]
+            gameStatus.currentPlayer = players[0]
             
             //skriver til game.txt med spillende brugere og nuværende gameStatus
             fileStream.writeFileSync(gameFile, JSON.stringify(new gameState(players, gameStatus)), (err) => {

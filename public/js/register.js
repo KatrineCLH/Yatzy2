@@ -34,8 +34,8 @@ window.onload = function (){
             },
             body: JSON.stringify({users: gamerList})
         }
-        console.log(postUsers.body.users);
-        fetch("rest/startGame", postUsers).then(response => console.log(response))
+        console.log(JSON.parse(postUsers.body).users);
+        fetch("rest/startGame", postUsers).then(response => console.log(response.status))
     }
 }
 
