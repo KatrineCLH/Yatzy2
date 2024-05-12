@@ -26,13 +26,15 @@ window.onload = function (){
     }
 
     document.getElementById("startButton").onclick = function (){
+        console.log(gamerList);
         let postUsers = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(gamerList)
+            body: JSON.stringify({users: gamerList})
         }
+        console.log(postUsers.body.users);
         fetch("rest/startGame", postUsers).then(response => console.log(response))
     }
 }
