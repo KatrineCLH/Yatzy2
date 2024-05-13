@@ -119,16 +119,11 @@ router.route('/startGame')
             gameStatus.currentPlayer = players[0]
             
             //skriver til game.txt med spillende brugere og nuværende gameStatus
-            fileStream.writeFileSync(gameFile, JSON.stringify(new gameState(players, gameStatus)), (err) => {
-                if (err) {
-                    let message = "tried to write " + user.name + ", to file but something went wrong"
-                    console.log(message)
-                    res.status(HttpStatus.METHOD_FAILURE).send(message)
-                    return;
-                }
-            })
-            
-            
+            fileStream.writeFileSync(
+                gameFile,
+                JSON.stringify(new gameState(players, gameStatus)),
+                {encoding: 'utf-8', flag: 'w'}
+            )
 
             res.status(HttpStatus.OK).send()
             return;
@@ -136,6 +131,18 @@ router.route('/startGame')
 
         res.status(HttpStatus.BAD_REQUEST).send("No users selected")
         return;
+    })
+
+router.route('/game/reset')
+    .post((req, res) => {
+        if(!fileStream.existsSync(gameFile)) {
+            res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
+            return;
+        }
+
+        
+
+        
     })
 
 //MUST BE AT THE BOTTOM OF ALL THE ROUTER CODE
