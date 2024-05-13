@@ -1,12 +1,11 @@
 let dropDown
 let gamerList = []
-let warning
 
 window.onload = function (){
     dropDown = document.getElementById('users')
     populateDropDown(dropDown)
 
-    warning = document.getElementById("warning")
+    let warning = document.getElementById("warning")
 
     document.getElementById("addButton").onclick = function (){
         //read who user is trying to add to game
@@ -22,12 +21,9 @@ window.onload = function (){
             warning.style.display = "block"
             warning.style.color = "red"
         }
-
-        //console.log(gamerList);
     }
 
     document.getElementById("startButton").onclick = function (){
-        console.log(gamerList);
         let postUsers = {
             method: "POST",
             headers: {
@@ -35,8 +31,12 @@ window.onload = function (){
             },
             body: JSON.stringify({users: gamerList})
         }
-        console.log(JSON.parse(postUsers.body).users);
-        fetch("rest/startGame", postUsers).then(response => console.log(response.status))
+        fetch("rest/startGame", postUsers).then(response => {
+            console.log(response.status)
+            if(response.status === 200) {
+                window.location.pathname ='';
+            }
+        })
     }
 }
 
@@ -73,9 +73,7 @@ function populateDropDown(dropDown){
 
         return response.json();
     }).then(data =>{
-        //console.log(data);
         let userList = JSON.parse(data)
-        //console.log(userList);
         userList.forEach(user => {
             let option = document.createElement("option")
             option.value = user.name
