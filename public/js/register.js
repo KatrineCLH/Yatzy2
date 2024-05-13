@@ -36,7 +36,11 @@ window.onload = function (){
             body: JSON.stringify({users: gamerList})
         }
         console.log(JSON.parse(postUsers.body).users);
-        fetch("rest/startGame", postUsers).then(response => console.log(response.status))
+        fetch("rest/startGame", postUsers).then(response => {
+            console.log(response.status)
+            if (response.status == 200){
+                window.location.pathname = ""
+            }})
     }
 }
 
