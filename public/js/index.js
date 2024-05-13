@@ -104,7 +104,7 @@ function buttonRoll() {
     rollCounter++
     if (rollCounter === 3){
         rollButton.disabled = true;
-        rollButton.removeAttribute("class")
+        rollButton.setAttribute("class", "normcore-button")
     }
     //restcall to backend //TEST EXAMPLE
     fetch("rest/game/rollbtn").then(response => {
