@@ -6,7 +6,14 @@ ul {
     margin: 0px;
     padding: 0px;
     list-style: none;
-    overflow: hidden;
+    text-align: right;
+
+}
+
+ul li {
+    display: inline-block;
+    cursor: pointer;
+    padding: 6px;
 }
 
 ul li a {
@@ -16,26 +23,6 @@ ul li a {
     display: block;
     padding: 16px;
 }
-
-#nav-left {
-    float: left
-}
-
-#nav-left ul li{
-    float: left;
-}
-
-#nav-right ul li{
-    float: right;
-}
-
-ul li {
-    display: inline-block;
-    cursor: pointer;
-    padding: 6px;
-}
-
-
 
 ul li:hover {
     background: #10ac84;
@@ -49,8 +36,28 @@ ul li i {
     padding-top: 0px;
 }
 
-nav div {
-    display: none;
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+nav a {
+    display: block;
+    width: 60px;
+}
+
+.nav-left {
+    float: left;
+}
+
+.nav-left ul li {
+    float: left;
+}
+
+.nav-right ul li {
+    float: right;
 }
 
 @media(max-width: 768px) {
@@ -64,6 +71,7 @@ nav div {
 
     }
 
+
     ul {
         display: none;
         background: #38ada9;
@@ -75,11 +83,4 @@ nav div {
         padding: 0px;
     }
 
-    #nav-left ul li{
-        float: left;
-    }
-    
-    #nav-right ul li{
-        float: right;
-    }
 }
