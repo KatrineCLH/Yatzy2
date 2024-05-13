@@ -7,6 +7,7 @@ let turn = 0;
 //Roll button for dice
 let rollButton = document.getElementById("rollButton");
 rollButton.onclick = () => buttonRoll();
+let rollCounter = 0
 
 
 
@@ -94,12 +95,18 @@ function postChoice(element) {
         turn = data.turn;
         toggleLight(turn);
         rollButton.disabled = false;
+        rollCounter = 0
+        rollButton.setAttribute("class", "glow-button")
     })
 }
 
 
 function buttonRoll() {
-    rollButton.disabled = true;
+    rollCounter++
+    if (rollCounter === 3){
+        rollButton.disabled = true;
+        rollButton.setAttribute("class", "normcore-button")
+    }
     //restcall to backend //TEST EXAMPLE
     fetch("rest/game/rollbtn").then(response => {
         if (!response.ok) {
