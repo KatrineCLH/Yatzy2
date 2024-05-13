@@ -20,7 +20,8 @@ window.onload = function () {
 
 
     scores = document.querySelectorAll("input");
-    for (let field of scores) {
+    let inputFields = document.getElementById('2').children;
+    for (let field of inputFields) {
         field.addEventListener("click", function (e) {
             //if turn != 0
            if( field.style.backgroundColor != 'lightblue'){
