@@ -1,11 +1,12 @@
 let dropDown
 let gamerList = []
+let warning
 
 window.onload = function (){
     dropDown = document.getElementById('users')
     populateDropDown(dropDown)
 
-    let warning = document.getElementById("warning")
+    warning = document.getElementById("warning")
 
     document.getElementById("addButton").onclick = function (){
         //read who user is trying to add to game
