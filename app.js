@@ -140,9 +140,16 @@ router.route('/game/reset')
             return;
         }
 
-        
+        fileStream.writeFileSync(gameFile, "", {encoding: 'utf-8', flag: 'w'})
 
-        
+        diceHeld = [false, false, false, false, false];
+        turn = 1
+        firstRollDone = false
+        currentPlayer = null
+        players = []
+        gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: false}
+
+        res.status(ok).send()
     })
 
 //MUST BE AT THE BOTTOM OF ALL THE ROUTER CODE
