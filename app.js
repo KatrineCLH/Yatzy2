@@ -119,16 +119,11 @@ router.route('/startGame')
             gameStatus.currentPlayer = players[0]
             
             //skriver til game.txt med spillende brugere og nuværende gameStatus
-            fileStream.writeFileSync(gameFile, JSON.stringify(new gameState(players, gameStatus)), (err) => {
-                if (err) {
-                    let message = "tried to write " + user.name + ", to file but something went wrong"
-                    console.log(message)
-                    res.status(HttpStatus.METHOD_FAILURE).send(message)
-                    return;
-                }
-            })
-            
-            
+            fileStream.writeFileSync(
+                gameFile,
+                JSON.stringify(new gameState(players, gameStatus)),
+                {encoding: 'utf-8', flag: 'w'}
+            )
 
             res.status(HttpStatus.OK).send()
             return;
