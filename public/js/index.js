@@ -21,8 +21,7 @@ window.onload = function () {
 
 
     scores = document.querySelectorAll("input");
-    let inputFields = document.getElementById('2').children;
-    for (let field of inputFields) {
+    for (let field of scores) {
         field.addEventListener("click", function (e) {
             //if turn != 0
            if( field.style.backgroundColor != 'lightblue'){
@@ -61,6 +60,9 @@ function toggleLight(index) {
 
 function postChoice(element) {
     let index = [...scores].indexOf(element);
+    if(index > 14) {
+        return;
+    }
     fetch('rest/game/lockfield', {
         method: "POST",
         headers: {
