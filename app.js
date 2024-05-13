@@ -138,6 +138,18 @@ router.route('/startGame')
         return;
     })
 
+router.route('/game/reset')
+    .post((req, res) => {
+        if(!fileStream.existsSync(gameFile)) {
+            res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
+            return;
+        }
+
+        
+
+        
+    })
+
 //MUST BE AT THE BOTTOM OF ALL THE ROUTER CODE
 app.use('/rest', router);
 
