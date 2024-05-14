@@ -31,10 +31,15 @@ window.onload = function (){
             },
             body: JSON.stringify({users: gamerList})
         }
-        fetch("rest/startGame", postUsers).then(response => {
+        fetch("rest/startGame", postUsers).then(async response => {
             console.log(response.status)
             if(response.status === 200) {
                 window.location.pathname ='';
+            }
+            if(response.status === 423) {
+                const err = await response.text();
+                alert(err);
+                
             }
         })
     }
