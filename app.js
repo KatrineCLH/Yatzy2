@@ -51,8 +51,8 @@ router.route('/game/lockfield')
             res.status(HttpStatus.FORBIDDEN).send("You must roll atleast once before locking in a choice.");
             return;
         }
-        firstRollDone = false;
-        setHeld(req.body.id, currentPlayer);
+        setHeld(req.body.id, getPlayer(currentPlayer))
+
         currentPlayer = getNextPlayer();
         res.status(HttpStatus.OK).json({player: currentPlayer, turn: turn });
     })
@@ -100,14 +100,17 @@ router.route('/register')
 router.route('/startGame')
     .post((req, res) => {
         const file = getGameFile();
-        console.log(file);
-        if(file.gameState.isGameOngoing) {
-            return res.status(HttpStatus.LOCKED).send("There is already an ongoing game.\nWait for game to be finished before starting a new game.")
+
+        if(file !== null) {
+            if(file.gameState.isGameOngoing) {
+                return res.status(HttpStatus.LOCKED).send("There is already an ongoing game.\nWait for game to be finished before starting a new game.")
+            }
         }
         if(!fileStream.existsSync(userFile)) {
         res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
         return;
         }
+        players = [];
         let userList = req.body.users
         userList.sort()
         for(const u of userList) {
@@ -119,7 +122,7 @@ router.route('/startGame')
         if (userList.length > 0) {
 
             //gør gameStatus klar til afsending
-            gameStatus.turn = 0
+            gameStatus.turn = 1
             gameStatus.isGameOngoing = true
             gameStatus.currentPlayer = players[0]
             
@@ -150,14 +153,7 @@ router.route('/game/reset')
             return;
         }
 
-        fileStream.writeFileSync(gameFile, "", {encoding: 'utf-8', flag: 'w'})
-
-        diceHeld = [false, false, false, false, false];
-        turn = 1
-        firstRollDone = false
-        currentPlayer = null
-        players = []
-        gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: false}
+        clearGameFile();
 
         res.status(ok).send()
     })
@@ -182,6 +178,20 @@ let players = [];
 //Lucas: fields pertinent to gameStatus is now an object
 let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
 
+function clearGameFile() {
+    fileStream.writeFileSync(gameFile, "", (err) => {
+        if(err) {
+            console.error("failed to reset game file");
+        }
+    });
+
+    diceHeld = [false, false, false, false, false];
+    turn = 1
+    firstRollDone = false
+    currentPlayer = null
+    players = []
+    gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: false}
+}
 
 function getGameFile() {
     try {
@@ -204,29 +214,72 @@ function rollDice() {
     }
 }
 
-function setHeld(i, player){
+function setHeld(i, player) {
     switch(i) {
-        case 0: return player.score.ones.held = true;
-        case 1: return player.score.twos.held = true;
-        case 2: return player.score.threes.held = true;
-        case 3: return player.score.fours.held = true;
-        case 4: return player.score.fives.held = true;
-        case 5: return player.score.sixes.held = true;
-        case 6: return player.score.onePair.held = true;
-        case 7: return player.score.twoPair.held = true;
-        case 8: return player.score.threeSame.held = true;
-        case 9: return player.score.fourSame.held = true;
-        case 10: return player.score.fullHouse.held = true;
-        case 11: return player.score.smallStraight.held = true;
-        case 12: return player.score.largeStraight.held = true;
-        case 13: return player.score.chance.held = true;
-        case 14: return player.score.yatzy.held = true;
-        case 15: return player.score.sum.held = true;
-        case 16: return player.score.bonus.held = true;
-        case 17: return player.score.total.held = true;
-        default: return 0;
-        
+        case 0:
+            player.score.ones.held = true;
+            break;
+        case 1:
+            player.score.twos.held = true;
+            break;
+        case 2:
+            player.score.threes.held = true;
+            break;
+        case 3:
+            player.score.fours.held = true;
+            break;
+        case 4:
+            player.score.fives.held = true;
+            break;
+        case 5:
+            player.score.sixes.held = true;
+            break;
+        case 6:
+            player.score.onePair.held = true;
+            break;
+        case 7:
+            player.score.twoPair.held = true;
+            break;
+        case 8:
+            player.score.threeSame.held = true;
+            break;
+        case 9:
+            player.score.fourSame.held = true;
+            break;
+        case 10:
+            player.score.fullHouse.held = true;
+            break;
+        case 11:
+            player.score.smallStraight.held = true;
+            break;
+        case 12:
+            player.score.largeStraight.held = true;
+            break;
+        case 13:
+            player.score.chance.held = true;
+            break;
+        case 14:
+            player.score.yatzy.held = true;
+            break;
+        case 15:
+            player.score.sum.held = true;
+            break;
+        case 16:
+            player.score.bonus.held = true;
+            break;
+        case 17:
+            player.score.total.held = true;
+            break;
+        default:
+            break;
     }
+}
+
+function getPlayer() {
+    let playerArr = [...players];
+    let index = playerArr.findIndex(p => p.name == currentPlayer.name);
+
+    return playerArr[index];
 }
 
 function getNextPlayer() {
