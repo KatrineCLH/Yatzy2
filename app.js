@@ -45,6 +45,12 @@ router.route('/game/rollbtn')
         res.status(HttpStatus.ACCEPTED).json(result);
     });
 
+router.route('/game/lockdie')
+.get((req, res) => {
+
+});
+
+
 router.route('/game/lockfield')
     .post((req, res) => {
         if(firstRollDone === false) {
