@@ -10,4 +10,12 @@ Lucas - 02/5
 
     class Score får for hver score et objekt med
         {held: bool, value: int}
+
+Lucas - 13/5
+    Funktionalitet til gameOver
+     - erklær vinder!
+     - saml statistik og persistér det ift. hver bruger.
+     - Kald func fra Katrines "stop spil" game/reset REST-kald
+     - 
+
     

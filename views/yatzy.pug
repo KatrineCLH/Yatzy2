@@ -75,3 +75,7 @@ html
                     li
                         div.sphere.green
                         | Turn #{val}
+                        if val > 15
+                            // I tilfælde af sejr
+                            include victory.pug 
+        

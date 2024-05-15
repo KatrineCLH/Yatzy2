@@ -25,7 +25,7 @@ app.get('/', function (req, res) {
 
     currentPlayer = file.gameState.currentPlayer;
     players = file.players;
-    res.render('yatzy', {name : currentPlayer.name, players: players});
+    res.render('yatzy', {name : currentPlayer.name, players: players, isGameOngoing: file.gameState.isGameOngoing});
 })
 
 app.get('/register', function (req, res) {
@@ -55,6 +55,68 @@ router.route('/game/lockfield')
         setHeld(req.body.id, currentPlayer);
         currentPlayer = getNextPlayer();
         res.status(HttpStatus.OK).json({player: currentPlayer, turn: turn });
+    })
+
+// YOU LET BRO COOK
+router.route('/game/gameover')
+    .post((req, res) => {
+        if (gameStatus.turn > 15 || isGameOngoing === false) {
+            gameStatus.isGameOngoing = false;
+
+            let gameJSON = getGameFile();
+            gameJSON.isGameOngoing = false;
+            fileStream.writeFileSync(gameJSON);
+
+            //TODO call stopGame() or similar function
+
+            function updateStatistics(user) {
+
+                if (user.statistics == null || user.statistics == undefined) {
+                   let statistics = {};
+                    statistics.game = [].push({
+                        gameID: 1,
+                        scoreTotal: players.find((player) => player.name == user.name).score
+                        });
+                } else {
+                    user.statistics.game.push({
+                        gameID: user.statistics.game.length + 1,
+                        scoreTotal: players.find((player) => player.name == user.name).score
+                    });
+                }
+            }
+
+            function persistStatistics() {
+                let users = getUsers();
+                // Er du med i det nu færdige spil får du et statistics objekt baseret på spillets udfald
+                players.forEach((player) => updateStatistics(users
+                    .find((user) => user.name == player.name))
+            );
+                //Er du i listen over spillere opdateres og persisteres dit data i users.txt
+                users = users.forEach((user => {
+                    if (players.find((player) => player.name == user.name)) {
+                        user = player
+                    }
+                }));
+
+                fileStream.writeFile(userFile, JSON.stringify(users), (err) => {
+                    if (err) {
+                        console.log("tried to save " + user.name + ", to file but failed");
+                        return;
+                    }
+                })
+                return users;
+            }
+            let stats;
+            try {
+                stats = persistStatistics();
+            } catch (error) {
+                console.log('persistStatistics() error: ' + error);
+            }
+
+            res.status(HttpStatus.OK).json(stats)
+        } else {
+            res.status(HttpStatus.FORBIDDEN).send("Game finishes after turn 15")
+        }
     })
 
 router.route('/register')
