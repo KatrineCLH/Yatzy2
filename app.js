@@ -18,14 +18,14 @@ app.use(express.json());
 app.get('/', function (req, res) {
     const file = getGameFile();
 
-    if(file === null || file.gameState.isGameOngoing === false) {
-        res.render('error', {error: "No game started. Go to /register to start game."});
+    if (file === null || file.gameState.isGameOngoing === false) {
+        res.render('error', { error: "No game started. Go to /register to start game." });
         return;
     }
 
     currentPlayer = file.gameState.currentPlayer;
     players = file.players;
-    res.render('yatzy', {name : currentPlayer.name, players: players, isGameOngoing: file.gameState.isGameOngoing});
+    res.render('yatzy', { name: currentPlayer.name, players: players, isGameOngoing: file.gameState.isGameOngoing });
 })
 
 app.get('/register', function (req, res) {
@@ -36,9 +36,9 @@ app.get('/register', function (req, res) {
 
 router.route('/game/rollbtn')
     .get((req, res) => {
-        if(firstRollDone === false) {
+        if (firstRollDone === false) {
             firstRollDone = true;
-        } 
+        }
         rollDice();
         updateScores(currentPlayer);
         let result = { pot: currentPlayer.score, dice: diceValues };
@@ -47,65 +47,30 @@ router.route('/game/rollbtn')
 
 router.route('/game/lockfield')
     .post((req, res) => {
-        if(firstRollDone === false) {
+        if (firstRollDone === false) {
             res.status(HttpStatus.FORBIDDEN).send("You must roll atleast once before locking in a choice.");
             return;
         }
         setHeld(req.body.id, getPlayer(currentPlayer))
 
         currentPlayer = getNextPlayer();
-        res.status(HttpStatus.OK).json({player: currentPlayer, turn: turn });
+        res.status(HttpStatus.OK).json({ player: currentPlayer, turn: turn });
     })
 
 // YOU LET BRO COOK
 router.route('/game/gameover')
     .post((req, res) => {
+        //Kaldes kun når game er ovre. Burde være i frontend logik. Formentlig i response fra post data.
         if (gameStatus.turn > 15 || isGameOngoing === false) {
             gameStatus.isGameOngoing = false;
 
             let gameJSON = getGameFile();
             gameJSON.isGameOngoing = false;
+            //Måske vi burde lave noget data persist først og så bare clearfile bagefter? clearGameFile() findes nu. Dette vil også automatisk stoppe spillet.
             fileStream.writeFileSync(gameJSON);
 
             //TODO call stopGame() or similar function
 
-            function updateStatistics(user) {
-
-                if (user.statistics == null || user.statistics == undefined) {
-                   let statistics = {};
-                    statistics.game = [].push({
-                        gameID: 1,
-                        scoreTotal: players.find((player) => player.name == user.name).score
-                        });
-                } else {
-                    user.statistics.game.push({
-                        gameID: user.statistics.game.length + 1,
-                        scoreTotal: players.find((player) => player.name == user.name).score
-                    });
-                }
-            }
-
-            function persistStatistics() {
-                let users = getUsers();
-                // Er du med i det nu færdige spil får du et statistics objekt baseret på spillets udfald
-                players.forEach((player) => updateStatistics(users
-                    .find((user) => user.name == player.name))
-            );
-                //Er du i listen over spillere opdateres og persisteres dit data i users.txt
-                users = users.forEach((user => {
-                    if (players.find((player) => player.name == user.name)) {
-                        user = player
-                    }
-                }));
-
-                fileStream.writeFile(userFile, JSON.stringify(users), (err) => {
-                    if (err) {
-                        console.log("tried to save " + user.name + ", to file but failed");
-                        return;
-                    }
-                })
-                return users;
-            }
             let stats;
             try {
                 stats = persistStatistics();
@@ -122,37 +87,37 @@ router.route('/game/gameover')
 router.route('/register')
     .post((req, res) => {
 
-    let user = new User(req.body.name);
+        let user = new User(req.body.name);
 
-    //If no user file?
-    if(!fileStream.existsSync(userFile)) {
-        //add something about why
-       res.status(HttpStatus.METHOD_FAILURE).send();
-       return;
-    }
-
-    //If content in user file, then make list of users and make sure user doesn't already exist
-    let content = fileStream.readFileSync(userFile)
-    let userList = [];
-    if(content.length > 0) {
-        userList = JSON.parse(content);
-        if(userList.filter( function(u) { return u.name === user.name}).length > 0) {
-            //add that username already exists to response
-            res.status(HttpStatus.NOT_MODIFIED).send();
+        //If no user file?
+        if (!fileStream.existsSync(userFile)) {
+            //add something about why
+            res.status(HttpStatus.METHOD_FAILURE).send();
             return;
         }
-    }
 
-    //User doesn't exist, then add user to list. Add list to file
-    userList.push(user)
-    fileStream.writeFile(userFile, JSON.stringify(userList), function(err) {
-        if(err) {
-            console.log("tried to save " + user.name + ", to file but failed");
+        //If content in user file, then make list of users and make sure user doesn't already exist
+        let content = fileStream.readFileSync(userFile)
+        let userList = [];
+        if (content.length > 0) {
+            userList = JSON.parse(content);
+            if (userList.filter(function (u) { return u.name === user.name }).length > 0) {
+                //add that username already exists to response
+                res.status(HttpStatus.NOT_MODIFIED).send();
+                return;
+            }
         }
+
+        //User doesn't exist, then add user to list. Add list to file
+        userList.push(user)
+        fileStream.writeFile(userFile, JSON.stringify(userList), function (err) {
+            if (err) {
+                console.log("tried to save " + user.name + ", to file but failed");
+            }
+        })
+        res.status(HttpStatus.OK).json(JSON.stringify(userList)).send();
+
     })
-    res.status(HttpStatus.OK).json(JSON.stringify(userList)).send();
-    
-})
     .get((req, res) => {
         let userList = getUsers();
         res.status(HttpStatus.OK).json(JSON.stringify(userList));
@@ -163,19 +128,19 @@ router.route('/startGame')
     .post((req, res) => {
         const file = getGameFile();
 
-        if(file !== null) {
-            if(file.gameState.isGameOngoing) {
+        if (file !== null) {
+            if (file.gameState.isGameOngoing) {
                 return res.status(HttpStatus.LOCKED).send("There is already an ongoing game.\nWait for game to be finished before starting a new game.")
             }
         }
-        if(!fileStream.existsSync(userFile)) {
-        res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
-        return;
+        if (!fileStream.existsSync(userFile)) {
+            res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
+            return;
         }
         players = [];
         let userList = req.body.users
         userList.sort()
-        for(const u of userList) {
+        for (const u of userList) {
             players.push(new Player(u.name))
         }
 
@@ -187,7 +152,7 @@ router.route('/startGame')
             gameStatus.turn = 1
             gameStatus.isGameOngoing = true
             gameStatus.currentPlayer = players[0]
-            
+
             //skriver til game.txt med spillende brugere og nuværende gameStatus
             fileStream.writeFileSync(gameFile, JSON.stringify(new gameState(players, gameStatus)), (err) => {
                 if (err) {
@@ -197,8 +162,8 @@ router.route('/startGame')
                     return;
                 }
             })
-            
-            
+
+
 
             res.status(HttpStatus.OK).send()
             return;
@@ -210,7 +175,7 @@ router.route('/startGame')
 
 router.route('/game/reset')
     .post((req, res) => {
-        if(!fileStream.existsSync(gameFile)) {
+        if (!fileStream.existsSync(gameFile)) {
             res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
             return;
         }
@@ -238,12 +203,51 @@ let firstRollDone = false;
 let currentPlayer;
 let players = [];
 //Lucas: fields pertinent to gameStatus is now an object
-let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
+let gameStatus = { turn: 0, currentPlayer: null, isGameOngoing: true }
+
+
+function updateStatistics(user) {
+
+    if (user.statistics == null || user.statistics == undefined) {
+        let statistics = {};
+        statistics.game = [].push({
+            gameID: 1,
+            scoreTotal: players.find((player) => player.name == user.name).score
+        });
+    } else {
+        user.statistics.game.push({
+            gameID: user.statistics.game.length + 1,
+            scoreTotal: players.find((player) => player.name == user.name).score
+        });
+    }
+}
+
+function persistStatistics() {
+    let users = getUsers();
+    // Er du med i det nu færdige spil får du et statistics objekt baseret på spillets udfald
+    players.forEach((player) => updateStatistics(users
+        .find((user) => user.name == player.name))
+    );
+    //Er du i listen over spillere opdateres og persisteres dit data i users.txt
+    users = users.forEach((user => {
+        if (players.find((player) => player.name == user.name)) {
+            user = player
+        }
+    }));
+
+    fileStream.writeFile(userFile, JSON.stringify(users), (err) => {
+        if (err) {
+            console.log("tried to save " + user.name + ", to file but failed");
+            return;
+        }
+    })
+    return users;
+}
 
 function clearGameFile() {
     console.log("Clearing game file")
-    fileStream.writeFileSync(gameFile, "", {flag: 'w'}, (err) => {
-        if(err) {
+    fileStream.writeFileSync(gameFile, "", { flag: 'w' }, (err) => {
+        if (err) {
             console.error("failed to reset game file");
         }
     });
@@ -253,14 +257,14 @@ function clearGameFile() {
     firstRollDone = false
     currentPlayer = null
     players = []
-    gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: false}
+    gameStatus = { turn: 0, currentPlayer: null, isGameOngoing: false }
 }
 
 function getGameFile() {
     try {
-      return JSON.parse(fileStream.readFileSync(gameFile));
+        return JSON.parse(fileStream.readFileSync(gameFile));
     }
-    catch{
+    catch {
         return null;
     }
 
@@ -278,7 +282,7 @@ function rollDice() {
 }
 
 function setHeld(i, player) {
-    switch(i) {
+    switch (i) {
         case 0:
             player.score.ones.held = true;
             break;
@@ -350,25 +354,20 @@ function getNextPlayer() {
     let index = playerArr.findIndex(p => p.name == currentPlayer.name);
     //turn 16 denotes the end of the game as all players have picked their 15 fields.
     //Add some handling that says game is over.
-    if(index === playerArr.length-1 && turn < 16) {
+    if (index === playerArr.length - 1 && turn < 16) {
         turn++;
         index = -1
     }
 
-   return playerArr[index +1]
+    return playerArr[index + 1]
 }
 
 
-function updateScore(playername, scoreField) {
-    // read json file, get player with name or have a variable that contains current player
-    // get scorefield field from player.score.ones etc. and swap value. Probably a switch case
-}
-
-function getUsers(){
-    if(!fileStream.existsSync(userFile)) {
+function getUsers() {
+    if (!fileStream.existsSync(userFile)) {
         //add something about why
-       res.status(HttpStatus.METHOD_FAILURE).send();
-       return;
+        res.status(HttpStatus.METHOD_FAILURE).send();
+        return;
     }
     let userList = [];
     let content = fileStream.readFileSync(userFile)
@@ -376,7 +375,7 @@ function getUsers(){
         userList = JSON.parse(content);
         //there should always only be one, so we're just returning first.
         return userList;
-    } catch(e) {
+    } catch (e) {
         console.log("error reading json file " + e)
     }
 
@@ -384,7 +383,7 @@ function getUsers(){
 }
 
 function getUser(username) {
-    if(!fileStream.existsSync(userFile)) {
+    if (!fileStream.existsSync(userFile)) {
         //add something about why
         console.log("No file for users found")
         return;
@@ -394,8 +393,8 @@ function getUser(username) {
     try {
         userList = JSON.parse(content);
         //there should always only be one, so we're just returning first.
-        return userList.filter((u)=> u.name === username)[0];
-    } catch(e) {
+        return userList.filter((u) => u.name === username)[0];
+    } catch (e) {
         console.log("error reading json file" + e)
     }
 
@@ -404,25 +403,25 @@ function getUser(username) {
 
 class Score {
     constructor() {
-        this.ones = {held: false, value: 0}
-        this.twos = {held: false, value: 0}
-        this.threes = {held: false, value: 0}
-        this.fours = {held: false, value: 0}
-        this.fives = {held: false, value: 0}
-        this.sixes = {held: false, value: 0}
-        this.onePair = {held: false, value: 0}
-        this.twoPair = {held: false, value: 0}
-        this.threeSame = {held: false, value: 0}
-        this.fourSame = {held: false, value: 0}
-        this.fullHouse = {held: false, value: 0}
-        this.smallStraight = {held: false, value: 0}
-        this.largeStraight = {held: false, value: 0}
-        this.chance = {held: false, value: 0}
-        this.yatzy = {held: false, value: 0}
-        this.total = {held: false, value: 0}
-        this.sum = {held: false, value: 0}
-        this.bonus = {held: false, value: 0}
-        this.result = {held: false, value: 0}
+        this.ones = { held: false, value: 0 }
+        this.twos = { held: false, value: 0 }
+        this.threes = { held: false, value: 0 }
+        this.fours = { held: false, value: 0 }
+        this.fives = { held: false, value: 0 }
+        this.sixes = { held: false, value: 0 }
+        this.onePair = { held: false, value: 0 }
+        this.twoPair = { held: false, value: 0 }
+        this.threeSame = { held: false, value: 0 }
+        this.fourSame = { held: false, value: 0 }
+        this.fullHouse = { held: false, value: 0 }
+        this.smallStraight = { held: false, value: 0 }
+        this.largeStraight = { held: false, value: 0 }
+        this.chance = { held: false, value: 0 }
+        this.yatzy = { held: false, value: 0 }
+        this.total = { held: false, value: 0 }
+        this.sum = { held: false, value: 0 }
+        this.bonus = { held: false, value: 0 }
+        this.result = { held: false, value: 0 }
     }
 }
 
@@ -521,7 +520,7 @@ function fillSingles(player) {
 function fillOnePair(player) {
     if (player.score.onePair.held == true) { return; }
 
-    let bestPair =  0;
+    let bestPair = 0;
     for (let i = diceValues.length - 1; i >= 1; i--) {
         for (let j = i - 1; j >= 0; j--) {
             if (diceValues[i] === diceValues[j] && bestPair < (2 * diceValues[i])) {
