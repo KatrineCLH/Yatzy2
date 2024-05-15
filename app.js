@@ -46,7 +46,7 @@ router.route('/game/rollbtn')
     });
 
 router.route('/game/lockdie')
-.get((req, res) => {
+.post((req, res) => {
 
 });
 
