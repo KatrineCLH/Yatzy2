@@ -84,7 +84,6 @@ function postChoice(element) {
         for (let i = 0; i < scores.length; i++) {
             const score = getScore(i, data.player.score);
             scores[i].value = score.value;
-            console.log(data);
             if(score.held === true) {
                 scores[i].style.backgroundColor = 'lightblue';
             } else {
