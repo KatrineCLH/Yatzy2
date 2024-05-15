@@ -1,7 +1,11 @@
 link(rel='stylesheet' href='/styles/nav.css')
+script(src="/js/nav.js", defer)
 nav
-    div
-      i(class='fa fa-bars')
+  #leftDiv.nav-left
+    ul
+      li 
+        a(href="/register" onclick='reset()') Reset
+  #rightDiv.nav-right     
     ul
       li
         a(href="/register") Register
