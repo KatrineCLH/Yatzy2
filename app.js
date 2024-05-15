@@ -91,11 +91,11 @@ router.route('/register')
     res.status(HttpStatus.OK).json(JSON.stringify(userList)).send();
     
 })
+    .get((req, res) => {
+        let userList = getUsers();
+        res.status(HttpStatus.OK).json(JSON.stringify(userList));
+    })
 
-.get((req, res) => {
-    let userList = getUsers();
-    res.status(HttpStatus.OK).json(JSON.stringify(userList));
-})
 
 router.route('/startGame')
     .post((req, res) => {
@@ -148,6 +148,7 @@ router.route('/startGame')
 
 router.route('/game/reset')
     .post((req, res) => {
+        console.log("hej")
         if(!fileStream.existsSync(gameFile)) {
             res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
             return;
@@ -155,7 +156,7 @@ router.route('/game/reset')
 
         clearGameFile();
 
-        res.status(ok).send()
+        res.status(HttpStatus.OK).send()
     })
 
 //MUST BE AT THE BOTTOM OF ALL THE ROUTER CODE
@@ -179,7 +180,8 @@ let players = [];
 let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
 
 function clearGameFile() {
-    fileStream.writeFileSync(gameFile, "", (err) => {
+    console.log("Clearing game file")
+    fileStream.writeFileSync(gameFile, "", {flag: 'w'}, (err) => {
         if(err) {
             console.error("failed to reset game file");
         }
