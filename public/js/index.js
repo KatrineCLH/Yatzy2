@@ -72,6 +72,9 @@ function toggleLight(index) {
 
 function postChoice(element) {
     let index = [...scores].indexOf(element);
+    if(index > 14) {
+        return;
+    }
     fetch('rest/game/lockfield', {
         method: "POST",
         headers: {
@@ -117,7 +120,7 @@ function buttonRoll() {
     rollCounter++
     if (rollCounter === 3) {
         rollButton.disabled = true;
-        rollButton.removeAttribute("class")
+        rollButton.setAttribute("class", "normcore-button")
     }
     //restcall to backend //TEST EXAMPLE
     fetch("rest/game/rollbtn").then(response => {

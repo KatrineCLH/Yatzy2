@@ -65,6 +65,7 @@ router.route('/game/lockfield')
 
 router.route('/register')
     .post((req, res) => {
+
     let user = new User(req.body.name);
 
     //If no user file?
@@ -104,7 +105,11 @@ router.route('/register')
 
 router.route('/startGame')
     .post((req, res) => {
-
+        const file = getGameFile();
+        console.log(file);
+        if(file.gameState.isGameOngoing) {
+            return res.status(HttpStatus.LOCKED).send("There is already an ongoing game.\nWait for game to be finished before starting a new game.")
+        }
         if(!fileStream.existsSync(userFile)) {
         res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
         return;
