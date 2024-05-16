@@ -1,10 +1,10 @@
 let scores = [];
-let dicerolls = 0;
 //Dice images
 let diceImages;
 let diceValues = [0, 0, 0, 0, 0];
 let prevPlayerLI;
 let turn = 0;
+let dice;
 //Roll button for dice
 let rollButton = document.getElementById("rollButton");
 rollButton.onclick = () => buttonRoll();
@@ -35,31 +35,42 @@ window.onload = function () {
     dice = document.querySelectorAll("img[id^='die']")
     
     for (let i = 0; i < dice.length; i++) {
-        dice[i].addEventListener("click", function (event) {
-            if (dicerolls < 2 && dicerolls >= 0) {
-                let index = [...dice].indexOf(event.target);
-                fetch('/rest/game/lockdie', {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ id: index })
-                }).then(async function (res) {
-                    if (res.status === 200) {
-                        event.target.disabled = true;
-                        return;
-                    }
+        dice[i].addEventListener("click", function(event) {postLockDie(event)})
+    }
+}
 
-                    alert("Smth smth, not working");
-
-                });
+function postLockDie(event) {
+    console.log("hej")
+    if (rollCounter < 3 && rollCounter >= 0) {
+        let index = [...dice].indexOf(event.target);
+        fetch('/rest/game/lockdie', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: index })
+        }).then(async function (res) {
+            if (res.status === 200) {
+                return res.json();
             }
+
+            alert("Smth smth, not working");
+
+        }).then((data) => {
+            console.log(data.lock)
+            if(data.lock) {
+                event.target.style.borderColor = 'gray'
+            } else {
+                event.target.style.borderColor = 'black'
+            }
+            event.target.disabled = data.lock;
         })
     }
 }
+
 function toggleLight(index) {
     var light = document.getElementsByClassName("sphere")[index - 1];
-    console.log(light);
+  
     if (light.classList.contains("green")) {
         light.classList.remove("green");
         light.classList.add("red");
@@ -98,24 +109,28 @@ function postChoice(element) {
         for (let i = 0; i < scores.length; i++) {
             const score = getScore(i, data.player.score);
             scores[i].value = score.value;
-            dicerolls = 0;
             if (score.held === true) {
                 scores[i].style.backgroundColor = 'lightblue';
             } else {
                 scores[i].style.backgroundColor = 'white';
             }
         }
+
         prevPlayerLI.style.transform = 'scale(1)';
         let newPlayerLI = document.getElementById(data.player.name);
         newPlayerLI.style.transform = 'scale(1.10)';
         prevPlayerLI = newPlayerLI;
+
         turn = data.turn;
         toggleLight(turn);
+
         rollButton.disabled = false;
         rollCounter = 0
         rollButton.setAttribute("class", "glow-button")
+
         for (let i = 0; i < dice.length; i++) {
             dice[i].disabled = false;
+            dice[i].style.borderColor = "black";
         }
     })
 }
@@ -137,7 +152,6 @@ function buttonRoll() {
     }).then(data => {
         for (let i = 0; i < dice.length; i++) {
             diceValues[i] = data.dice[i];
-            dice[i].style.borderColor = "black";
         }
 
         updateDice();

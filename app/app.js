@@ -13,7 +13,8 @@ import User from "./user.js";
 import { clearGameFile, getGameFile, getUser, getUsers } from "./fileManagement.js";
 import { diceValues, turn, firstRollDone, currentPlayer, emptyPlayers, 
     gameStatus, rollDice, setHeld, getPlayer, getNextPlayer, updateScores, 
-    players, setCurrentPlayer, setPlayers, setFirstRollDone, getCurrentPlayer} from "./gameLogic.js";
+    players, setCurrentPlayer, setPlayers, setFirstRollDone, getCurrentPlayer,
+    lockDie, unlockAllDice} from "./gameLogic.js";
 
 const app = express();
 const router = express.Router();
@@ -50,11 +51,23 @@ router.route('/game/rollbtn')
         } 
         rollDice();
         let pppp = players[[...players].findIndex(p => p.name == getCurrentPlayer().name)]
-        console.log(pppp);
         updateScores(pppp);
         let result = { pot: pppp.score, dice: diceValues };
         res.status(HttpStatus.ACCEPTED).json(result);
     });
+
+router.route('/game/lockdie')
+    .post((req, res) => {
+        const id = req.body.id;
+        console.log(id)
+        if(id === undefined || typeof id !== 'number' || id < 0 || id >= diceValues.length){
+            return res.status(HttpStatus.BAD_REQUEST).send("Invalid dice index")
+        }
+        let result = lockDie(id)
+        res.status(HttpStatus.OK).json({lock: result})
+    });
+
+
 
 router.route('/game/lockfield')
     .post((req, res) => {
@@ -62,9 +75,10 @@ router.route('/game/lockfield')
             res.status(HttpStatus.FORBIDDEN).send("You must roll atleast once before locking in a choice<3");
             return;
         }
+        unlockAllDice();
         setHeld(req.body.id, getPlayer(currentPlayer))
-
         setCurrentPlayer(getNextPlayer());
+
         res.status(HttpStatus.OK).json({player: currentPlayer, turn: turn });
     })
 

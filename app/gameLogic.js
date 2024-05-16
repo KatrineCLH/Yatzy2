@@ -1,6 +1,5 @@
 //Variables used in the various functions
 //these two variables should be a dice class
-export let diceHeld = [false, false, false, false, false];
 export let diceValues = [0, 0, 0, 0, 0];
 //keeps track of turn
 export let turn = 1;
@@ -8,17 +7,24 @@ export let firstRollDone = false;
 ///should be updated after every turn to next player in game.
 export let currentPlayer;
 export let players = [];
+export let diceLocked = [false, false, false, false, false]
 //Lucas: fields pertinent to gameStatus is now an object
 export let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
 
 //Rolls the dice
 export function rollDice() {
     for (let i = 0; i < diceValues.length; i++) {
-        if (!diceHeld[i]) {
+        if (!diceLocked[i]) {
             diceValues[i] = Math.floor(Math.random() * 6) + 1;
         }
     }
 }
+
+export function unlockAllDice() {
+    for (let i = 0; i < 5; i++) {
+        diceLocked[i] = false;
+    }
+  }
 
 export function setHeld(i, player) {
     switch(i) {
@@ -79,6 +85,11 @@ export function setHeld(i, player) {
         default:
             break;
     }
+}
+
+export function lockDie(id) {
+    diceLocked[id] = !diceLocked[id];
+    return diceLocked[id];
 }
 
 export function getPlayer() {
@@ -359,7 +370,7 @@ export function fillYatzy(player) {
 }
 
 export function resetStuff(){
-    diceHeld = [false, false, false, false, false];
+    diceLocked = [false, false, false, false, false];
     turn = 1
     firstRollDone = false
     currentPlayer = null
