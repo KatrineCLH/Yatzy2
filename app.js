@@ -47,7 +47,7 @@ router.route('/game/rollbtn')
 
 router.route('/game/lockdie')
 .post((req, res) => {
-    const {id} = req.body;
+    const id = req.body.id;
 
     if(id === undefined || typeof id !== 'number' || id < 0 || id >= diceValues.length){
         return res.status(HttpStatus.BAD_REQUEST).send("Invalid dice index")
@@ -58,8 +58,10 @@ router.route('/game/lockdie')
     res.status(HttpStatus.OK).send("Dice Locked Successfully");
 });
 
-function unlockAllDice(){
-    diceLockingState = Array(diceValues.length).fill(false);
+function unlockAllDice() {
+  for (let die in diceLocked) {
+    die = false;
+  }
 }
 
 
@@ -72,6 +74,7 @@ router.route('/game/lockfield')
         setHeld(req.body.id, getPlayer(currentPlayer))
 
         currentPlayer = getNextPlayer();
+        unlockAllDice();
         res.status(HttpStatus.OK).json({player: currentPlayer, turn: turn });
     })
 
@@ -189,7 +192,7 @@ app.use('/rest', router);
 let diceValues = [0, 0, 0, 0, 0];
 
 
-let diceLocked = Array(diceValues.length).fill(false);
+let diceLocked = [false, false, false, false, false]
 
 //keeps track of turn
 let turn = 1;

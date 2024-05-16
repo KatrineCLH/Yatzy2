@@ -32,13 +32,12 @@ window.onload = function () {
     }
 
     //Dice event listeners
-    dice = [document.getElementById('die1'), document.getElementById('die2'), document.getElementById('die3'),
-    document.getElementById('die4'), document.getElementById('die5')];
+    dice = document.querySelectorAll("img[id^='die']")
+    
     for (let i = 0; i < dice.length; i++) {
-        dice[i].addEventListener("click", function (element) {
-            if (dicerolls < 2 && turn !== 0) {
-
-                let index = [...dice].indexOf(element);
+        dice[i].addEventListener("click", function (event) {
+            if (dicerolls < 2 && dicerolls >= 0) {
+                let index = [...dice].indexOf(event.target);
                 fetch('/rest/game/lockdie', {
                     method: "POST",
                     headers: {
@@ -47,8 +46,7 @@ window.onload = function () {
                     body: JSON.stringify({ id: index })
                 }).then(async function (res) {
                     if (res.status === 200) {
-                        dicerolls++
-                        element.disabled = true;
+                        event.target.disabled = true;
                         return;
                     }
 
@@ -112,6 +110,9 @@ function postChoice(element) {
         rollButton.disabled = false;
         rollCounter = 0
         rollButton.setAttribute("class", "glow-button")
+        for (let i = 0; i < dice.length; i++) {
+            dice[i].disabled = false;
+        }
     })
 }
 
