@@ -73,6 +73,10 @@ function postChoice(element) {
     if(index > 14) {
         return;
     }
+    if (rollCounter === 0){
+        alert("Remember to roll dice before choosing a score field<3")
+        return;
+    }
     fetch('rest/game/lockfield', {
         method: "POST",
         headers: {

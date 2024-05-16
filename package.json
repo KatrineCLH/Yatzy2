@@ -21,7 +21,7 @@
   "scripts": {
     "dev": "",
     "test": "",
-    "start": "nodemon app.js"
+    "start": "nodemon app/app.js"
   },
   "dependencies": {
     "ejs": "^3.1.10",
