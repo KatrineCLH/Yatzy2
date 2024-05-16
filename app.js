@@ -61,27 +61,30 @@ router.route('/game/lockfield')
 router.route('/game/gameover')
     .post((req, res) => {
         //Kaldes kun når game er ovre. Burde være i frontend logik. Formentlig i response fra post data.
-        if (gameStatus.turn > 15 || isGameOngoing === false) {
-            gameStatus.isGameOngoing = false;
+        if (gameStatus.turn > 16 /*|| isGameOngoing === false*/) {
 
             let gameJSON = getGameFile();
             gameJSON.isGameOngoing = false;
             //Måske vi burde lave noget data persist først og så bare clearfile bagefter? clearGameFile() findes nu. Dette vil også automatisk stoppe spillet.
-            fileStream.writeFileSync(gameJSON);
 
             //TODO call stopGame() or similar function
 
             let stats;
             try {
                 stats = persistStatistics();
+                clearGameFile();
             } catch (error) {
                 console.log('persistStatistics() error: ' + error);
             }
 
             res.status(HttpStatus.OK).json(stats)
         } else {
-            res.status(HttpStatus.FORBIDDEN).send("Game finishes after turn 15")
+            res.status(HttpStatus.FORBIDDEN).send("Game finishes after turn 16")
         }
+    })
+    .get((req, res) => {
+        let userList = getUsers();
+        res.status(HttpStatus.OK).json(JSON.stringify(userList));
     })
 
 router.route('/register')
@@ -91,8 +94,7 @@ router.route('/register')
 
         //If no user file?
         if (!fileStream.existsSync(userFile)) {
-            //add something about why
-            res.status(HttpStatus.METHOD_FAILURE).send();
+            res.status(HttpStatus.METHOD_FAILURE).send("Could not find users.txt");
             return;
         }
 
@@ -235,12 +237,14 @@ function persistStatistics() {
         }
     }));
 
-    fileStream.writeFile(userFile, JSON.stringify(users), (err) => {
+    fileStream.writeFileSync(userFile, JSON.stringify(users), (err) => {
         if (err) {
             console.log("tried to save " + user.name + ", to file but failed");
             return;
         }
     })
+    //Sorteret liste af de bruger-objekter, der har deltaget i og færdiggjort spillet.
+    users = users.sort((u1, u2) => u1.statistics.scoreTotal - u2.statistics.scoreTotal)
     return users;
 }
 
