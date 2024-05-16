@@ -65,9 +65,6 @@ router.route('/game/gameover')
 
             let gameJSON = getGameFile();
             gameJSON.isGameOngoing = false;
-            //Måske vi burde lave noget data persist først og så bare clearfile bagefter? clearGameFile() findes nu. Dette vil også automatisk stoppe spillet.
-
-            //TODO call stopGame() or similar function
 
             let stats;
             try {
@@ -77,7 +74,20 @@ router.route('/game/gameover')
                 console.log('persistStatistics() error: ' + error);
             }
 
-            res.status(HttpStatus.OK).json(stats)
+            function postPlayersScores(playerStats) {
+                let alpehue = document.querySelector('button');
+                alpehue.prepend((ol) => {
+                    ol = document.createElement('ol')
+                    playerStats.forEach((player) => {
+                        ol.append(player.toString())
+                        ol.append(document.createElement('div'))
+                    })
+                })
+            }
+
+            postPlayersScores(stats);
+
+            res.status(HttpStatus.OK).json(stats);
         } else {
             res.status(HttpStatus.FORBIDDEN).send("Game finishes after turn 16")
         }
