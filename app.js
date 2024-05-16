@@ -47,8 +47,20 @@ router.route('/game/rollbtn')
 
 router.route('/game/lockdie')
 .post((req, res) => {
+    const {id} = req.body;
 
+    if(id === undefined || typeof id !== 'number' || id < 0 || id >= diceValues.length){
+        return res.status(HttpStatus.BAD_REQUEST).send("Invalid dice index")
+    }
+
+    diceLocked[id] = !diceLocked[id];
+
+    res.status(HttpStatus.OK).send("Dice Locked Successfully");
 });
+
+function unlockAllDice(){
+    diceLockingState = Array(diceValues.length).fill(false);
+}
 
 
 router.route('/game/lockfield')
@@ -153,8 +165,12 @@ app.use('/rest', router);
 
 //Variables used in the various functions
 //these two variables should be a dice class
-let diceHeld = [false, false, false, false, false];
+//let diceHeld = [false, false, false, false, false];
 let diceValues = [0, 0, 0, 0, 0];
+
+
+let diceLocked = Array(diceValues.length).fill(false);
+
 //keeps track of turn
 let turn = 1;
 let firstRollDone = false;
@@ -180,7 +196,7 @@ function getGameFile() {
 //Rolls the dice
 function rollDice() {
     for (let i = 0; i < diceValues.length; i++) {
-        if (!diceHeld[i]) {
+        if (!diceLocked[i]) {
             diceValues[i] = Math.floor(Math.random() * 6) + 1;
         }
     }
