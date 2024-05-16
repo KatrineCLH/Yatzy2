@@ -36,8 +36,28 @@ ul li i {
     padding-top: 0px;
 }
 
-nav div {
-    display: none;
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+nav a {
+    display: block;
+    width: 60px;
+}
+
+.nav-left {
+    float: left;
+}
+
+.nav-left ul li {
+    float: left;
+}
+
+.nav-right ul li {
+    float: right;
 }
 
 @media(max-width: 768px) {
@@ -51,9 +71,6 @@ nav div {
 
     }
 
-    nav div .fa {
-        font-size: 40px;
-    }
 
     ul {
         display: none;
@@ -66,7 +83,4 @@ nav div {
         padding: 0px;
     }
 
-    .drop .fa-sort-desc {
-        display: none;
-    }
 }
