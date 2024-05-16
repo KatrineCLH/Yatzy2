@@ -19,6 +19,15 @@ window.onload = function () {
     prevPlayerLI = document.querySelector('ol li');
     prevPlayerLI.style.transform = 'scale(1.10)';
 
+    playerProfiles = document.querySelectorAll('ol li');
+
+    for(let pf in playerProfiles) {
+        pf.addEventListener('mouseenter', (event) => {
+            getToolTipData(e.target.id);
+        })
+    }
+
+
 
     scores = document.querySelectorAll("input");
     for (let field of scores) {
@@ -153,6 +162,24 @@ function getScore(i, score){
         case 17: return score.total;
         default: return 0; 
     }
+}
+
+function getToolTipData(pId) {
+    console.log("hej")
+    /*
+    fetch('rest/game/getPlayer', {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({id: pId})
+    }).then((res) => {
+        if(res.ok) {
+            return res.json();
+        }
+    }).then((data) => {        
+        Node.textContent = data;
+    })*/
 }
 
 //Updates the dice images
