@@ -14,6 +14,17 @@ export function clearGameFile() {
     resetStuff()
 }
 
+export function saveToFile(data, filepath) {
+    fileStream.writeFileSync(filepath, JSON.stringify(data), {flag: 'w'}, (err) => {
+        if(err) {
+            console.error(`Failed to save to ${filepath}`);
+            return false;
+        }
+    });
+    return true;
+}
+
+
 export function getGameFile() {
     try {
       return JSON.parse(fileStream.readFileSync(gameFile));

@@ -1,4 +1,9 @@
 //Variables used in the various functions
+
+import { gameFile } from "./app.js";
+import { saveToFile } from "./fileManagement.js";
+import gameState from "./gameState.js";
+
 //these two variables should be a dice class
 export let diceValues = [0, 0, 0, 0, 0];
 //keeps track of turn
@@ -116,11 +121,14 @@ export function emptyPlayers(){
     return players = [];
 }
 
+export function saveGame() {
+    if(saveToFile(new gameState(players, gameStatus), gameFile)) {
+        return true
+    }
 
-export function updateScore(playername, scoreField) {
-    // read json file, get player with name or have a variable that contains current player
-    // get scorefield field from player.score.ones etc. and swap value. Probably a switch case
+    return false
 }
+
 
 /*  Fix this to fill a Score object instead and return that*/
 export function updateScores(player) {
