@@ -12,11 +12,11 @@ import User from "./user.js";
 
 import { clearGameFile, getGameFile, getUser, getUsers, saveToFile } from "./fileManagement.js";
 import {
-    diceValues, turn, firstRollDone, currentPlayer, emptyPlayers,
+    diceValues, emptyPlayers,
     gameStatus, rollDice, setHeld, getPlayer, getNextPlayer, updateScores,
     players, setCurrentPlayer, setPlayers, setFirstRollDone, getCurrentPlayer,
     lockDie, unlockAllDice,
-    saveGame
+    saveGame,loadGame 
 } from "./gameLogic.js";
 
 const app = express();
@@ -35,10 +35,12 @@ app.get('/', function (req, res) {
         res.render('error', { error: "No game started. Go to /register to start game." });
         return;
     }
+    loadGame(file);
 
     setCurrentPlayer(file.gameState.currentPlayer);
+    let currentPlayer = getCurrentPlayer();
     setPlayers(file.players);
-    res.render('yatzy', { name: currentPlayer.name, players: players });
+    res.render('yatzy', { name: currentPlayer.name, players: players, firstPlayer: currentPlayer, startingTurn: gameStatus.turn });
 })
 
 app.get('/register', function (req, res) {
@@ -49,20 +51,19 @@ app.get('/register', function (req, res) {
 
 router.route('/game/rollbtn')
     .get((req, res) => {
-        if (firstRollDone === false) {
+        if (gameStatus.firstRollDone === false) {
             setFirstRollDone(true);
         }
         rollDice();
-        let pppp = players[[...players].findIndex(p => p.name == getCurrentPlayer().name)]
-        updateScores(pppp);
-        let result = { pot: pppp.score, dice: diceValues };
+        let player = players[[...players].findIndex(p => p.name == getCurrentPlayer().name)]
+        updateScores(player);
+        let result = { pot: player.score, dice: diceValues };
         res.status(HttpStatus.ACCEPTED).json(result);
     });
 
 router.route('/game/lockdie')
     .post((req, res) => {
         const id = req.body.id;
-        console.log(id)
         if (id === undefined || typeof id !== 'number' || id < 0 || id >= diceValues.length) {
             return res.status(HttpStatus.BAD_REQUEST).send("Invalid dice index")
         }
@@ -78,14 +79,15 @@ router.route('/game/getplayer')
 
 router.route('/game/lockfield')
     .post((req, res) => {
-        if (firstRollDone === false) {
+        if (gameStatus.firstRollDone === false) {
             res.status(HttpStatus.FORBIDDEN).send("You must roll atleast once before locking in a choice<3");
             return;
         }
         unlockAllDice();
-        setHeld(req.body.id, getPlayer(currentPlayer))
+        setHeld(req.body.id, getPlayer(gameStatus.currentPlayer))
         setCurrentPlayer(getNextPlayer());
-        res.status(HttpStatus.OK).json({ player: currentPlayer, turn: turn });
+        saveGame();
+        res.status(HttpStatus.OK).json({ player: gameStatus.currentPlayer, turn: gameStatus.turn });
     })
 
 router.route('/register')

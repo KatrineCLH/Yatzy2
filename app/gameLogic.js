@@ -1,20 +1,28 @@
 //Variables used in the various functions
 
 import { gameFile } from "./app.js";
-import { saveToFile } from "./fileManagement.js";
+import { clearGameFile, saveToFile } from "./fileManagement.js";
 import gameState from "./gameState.js";
 
 //these two variables should be a dice class
 export let diceValues = [0, 0, 0, 0, 0];
 //keeps track of turn
-export let turn = 1;
-export let firstRollDone = false;
 ///should be updated after every turn to next player in game.
-export let currentPlayer;
 export let players = [];
 export let diceLocked = [false, false, false, false, false]
 //Lucas: fields pertinent to gameStatus is now an object
-export let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true}
+export let gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: true, firstRollDone: false}
+
+export function loadGame(file) {
+    //I Literally have no freaking clue why we have multiple variables for the same thing,
+    //but I suspect it's due to people working on different branches and not checking when they merge.
+    // Or frankly, maybe never looked for the variable at all... not good, might introduce bugs.
+    gameStatus.turn = file.gameState.turn
+    gameStatus.currentPlayer = file.gameState.currentPlayer;
+    gameStatus.isGameOngoing = file.gameState.isGameOngoing;
+    players = file.players;
+    
+}
 
 //Rolls the dice
 export function rollDice() {
@@ -99,18 +107,18 @@ export function lockDie(id) {
 
 export function getPlayer() {
     let playerArr = [...players];
-    let index = playerArr.findIndex(p => p.name == currentPlayer.name);
+    let index = playerArr.findIndex(p => p.name == gameStatus.currentPlayer.name);
 
     return playerArr[index];
 }
 
 export function getNextPlayer() {
     let playerArr = [...players];
-    let index = playerArr.findIndex(p => p.name == currentPlayer.name);
+    let index = playerArr.findIndex(p => p.name == gameStatus.currentPlayer.name);
     //turn 16 denotes the end of the game as all players have picked their 15 fields.
     //Add some handling that says game is over.
-    if(index === playerArr.length-1 && turn < 16) {
-        turn++;
+    if(index === playerArr.length-1 && gameStatus.turn < 16) {
+        gameStatus.turn++;
         index = -1
     }
 
@@ -379,16 +387,13 @@ export function fillYatzy(player) {
 
 export function resetStuff(){
     diceLocked = [false, false, false, false, false];
-    turn = 1
-    firstRollDone = false
-    currentPlayer = null
     players = []
-    gameStatus = {turn: 0, currentPlayer: null, isGameOngoing: false}
+    gameStatus = {turn: 1, currentPlayer: null, isGameOngoing: false, firstRollDone: false}
 }
 
 //getter og setter
 export function setCurrentPlayer(player){
-    currentPlayer = player;
+    gameStatus.currentPlayer = player;
 }
 
 export function setPlayers(playersss){
@@ -396,9 +401,9 @@ export function setPlayers(playersss){
 }
 
 export function setFirstRollDone(isDone){
-    firstRollDone = isDone;
+    gameStatus.firstRollDone = isDone;
 }
 
 export function getCurrentPlayer(){
-    return currentPlayer;
+    return gameStatus.currentPlayer;
 }
