@@ -10,7 +10,8 @@ html
             #sidebar
                 ol.ol-players(style="--text:'Player'" id="playerList")
                     each p in players
-                        li(id=p.name) #{ p.name }
+                        li(id=p.name class="tooltip") #{ p.name }
+                            span(id=p.name + "tooltip" class="tooltiptext") Loading...
             #content
                 #diceContainer
                     #diceDiv

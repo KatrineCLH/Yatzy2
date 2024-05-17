@@ -20,11 +20,12 @@ window.onload = function () {
     prevPlayerLI = document.querySelector('ol li');
     prevPlayerLI.style.transform = 'scale(1.10)';
 
+
     playerProfiles = document.querySelectorAll('ol li');
 
-    for(let pf in playerProfiles) {
-        pf.addEventListener('mouseenter', (event) => {
-            getToolTipData(e.target.id);
+    for(let i = 0; i < playerProfiles.length; i++) {
+        playerProfiles[i].addEventListener('mouseenter', function(event) {
+            getToolTipData(event.target.id);
         })
     }
 
@@ -197,10 +198,8 @@ function getScore(i, score) {
 }
 
 function getToolTipData(pId) {
-    console.log("hej")
-    /*
-    fetch('rest/game/getPlayer', {
-        method: "GET",
+    fetch('rest/game/getplayer', {
+        method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
@@ -209,9 +208,17 @@ function getToolTipData(pId) {
         if(res.ok) {
             return res.json();
         }
-    }).then((data) => {        
-        Node.textContent = data;
-    })*/
+    }).then((data) => {
+        let info  = ""
+
+        for (const [key, value] of Object.entries(data.player.score)) {
+            info += value.held ? key + ":" + value.value + "🔒\n" : `${key}: N/A\n`
+            console.log(`${key}: ${value.held} ${value.value}`);
+        }
+
+        
+        document.getElementById(pId + 'tooltip').textContent = info;
+    })
 }
 
 //Updates the dice images

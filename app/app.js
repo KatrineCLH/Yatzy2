@@ -67,7 +67,11 @@ router.route('/game/lockdie')
         res.status(HttpStatus.OK).json({lock: result})
     });
 
-
+router.route('/game/getplayer')
+    .post((req, res) => {
+        let player = getPlayer(req.body.id)
+        res.status(HttpStatus.OK).json({player: player})
+    })
 
 router.route('/game/lockfield')
     .post((req, res) => {
