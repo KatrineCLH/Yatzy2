@@ -220,6 +220,7 @@ function getScore(i, score) {
 }
 
 function getToolTipData(pId) {
+    console.log(pId)
     fetch('rest/game/getplayer', {
         method: "POST",
         headers: {
@@ -235,8 +236,15 @@ function getToolTipData(pId) {
 
         for (const [key, value] of Object.entries(data.player.score)) {
             info += value.held ? key + ":" + value.value + "🔒\n" : `${key}: N/A\n`
+            console.log(key +" "+ value.value)
         }
-
+        console.log(" ")
+        console.log(" ")
+        console.log(" ")
+        console.log(" ")
+        console.log(" ")
+        console.log(" ")
+        console.log(" ")
         
         document.getElementById(pId + 'tooltip').textContent = info;
     })

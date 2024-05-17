@@ -21,7 +21,6 @@ export function loadGame(file) {
     gameStatus.currentPlayer = file.gameState.currentPlayer;
     gameStatus.isGameOngoing = file.gameState.isGameOngoing;
     players = file.players;
-    
 }
 
 //Rolls the dice
@@ -105,16 +104,18 @@ export function lockDie(id) {
     return diceLocked[id];
 }
 
-export function getPlayer() {
+export function getPlayer(id) {
     let playerArr = [...players];
-    let index = playerArr.findIndex(p => p.name == gameStatus.currentPlayer.name);
+    let index = playerArr.findIndex(p => p.name === id);
+    console.log(index)
+
 
     return playerArr[index];
 }
 
 export function getNextPlayer() {
     let playerArr = [...players];
-    let index = playerArr.findIndex(p => p.name == gameStatus.currentPlayer.name);
+    let index = playerArr.findIndex(p => p.name === gameStatus.currentPlayer.name);
     //turn 16 denotes the end of the game as all players have picked their 15 fields.
     //Add some handling that says game is over.
     if(index === playerArr.length-1 && gameStatus.turn < 16) {
