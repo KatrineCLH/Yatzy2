@@ -84,7 +84,7 @@ router.route('/game/lockfield')
             return;
         }
         unlockAllDice();
-        setHeld(req.body.id, getPlayer(gameStatus.currentPlayer))
+        setHeld(req.body.id, getPlayer(gameStatus.currentPlayer.name))
         setCurrentPlayer(getNextPlayer());
         saveGame();
         res.status(HttpStatus.OK).json({ player: gameStatus.currentPlayer, turn: gameStatus.turn });
