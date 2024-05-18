@@ -6,12 +6,13 @@ html
         link(rel='stylesheet', type="text/css" href='/styles/yatzy.css')
     body
         include navbar.pug
-        #container
+        #container(data-first-player = firstPlayer)
             #sidebar
                 ol.ol-players(style="--text:'Player'" id="playerList")
                     each p in players
-                        li(id=p.name) #{ p.name }
-            #content
+                        li(id=p.name class="tooltip") #{ p.name }
+                            span(id=p.name + "tooltip" class="tooltiptext") Loading...
+            #content(data-starting-turn = startingTurn)
                 #diceContainer
                     #diceDiv
                         img#die1(src="../DiceImages/dice-six-faces-one.png")

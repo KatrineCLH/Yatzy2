@@ -3,7 +3,8 @@ let scores = [];
 let diceImages;
 let diceValues = [0, 0, 0, 0, 0];
 let prevPlayerLI;
-let turn = 0;
+let turn = 1;
+let dice;
 //Roll button for dice
 let rollButton = document.getElementById("rollButton");
 rollButton.onclick = () => buttonRoll();
@@ -16,44 +17,95 @@ window.onload = function () {
     //Extracting all input fields (scores)and attaching event clickers
 
     //setting first player to be first move.
-    prevPlayerLI = document.querySelector('ol li');
-    prevPlayerLI.style.transform = 'scale(1.10)';
+
+    playerProfiles = document.querySelectorAll('ol li');
+
+    for(let i = 0; i < playerProfiles.length; i++) {
+        playerProfiles[i].addEventListener('mouseenter', function(event) {
+            getToolTipData(event.target.id);
+        })
+    }
+
 
 
     scores = document.querySelectorAll("input");
     for (let field of scores) {
         field.addEventListener("click", function (e) {
             //if turn != 0
-           if( field.style.backgroundColor != 'lightblue'){
+            if (field.style.backgroundColor != 'lightblue') {
                 postChoice(e.target);
-           } 
+            }
         });
     }
 
     //Dice event listeners
-    dice = [document.getElementById('die1'), document.getElementById('die2'), document.getElementById('die3'),
-    document.getElementById('die4'), document.getElementById('die5')];
+    dice = document.querySelectorAll("img[id^='die']")
+    
     for (let i = 0; i < dice.length; i++) {
-        dice[i].addEventListener("click", function () {
-            /*if (turn != 0) {
-                diceHeld[i] = !diceHeld[i];
+        dice[i].addEventListener("click", function(event) {postLockDie(event)})
+    }
+
+    fillFirstPlayer();
+}
+
+function fillFirstPlayer() {
+    const firstPlayer = JSON.parse(document.getElementById('container').dataset.firstPlayer);
+    const startingTurn = document.getElementById('content').dataset.startingTurn
+    turn = startingTurn
+    for(let i = 0; i < startingTurn; i++) {
+        toggleLight(i);
+    }
+
+    for (let i = 1; i < scores.length; i++) {
+        const score = getScore(i, firstPlayer.score);
+        scores[i].value = score.value;
+        if (score.held === true) {
+            scores[i].style.backgroundColor = 'lightblue';
+        } else {
+            scores[i].style.backgroundColor = 'white';
+        }
+    }
+    prevPlayerLI = [...playerProfiles].filter((pf) => pf.id === firstPlayer.name)[0];
+    if(prevPlayerLI === undefined) {
+        prevPlayerLI = playerProfiles[0]
+    }
+    prevPlayerLI.style.transform = 'scale(1.10)';
+}
+
+function postLockDie(event) {
+    if (rollCounter < 3 && rollCounter >= 0) {
+        let index = [...dice].indexOf(event.target);
+        fetch('/rest/game/lockdie', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: index })
+        }).then(async function (res) {
+            if (res.status === 200) {
+                return res.json();
             }
-            if (diceHeld[i]) {
-                dice[i].style.borderColor = "red";
+
+            alert("Smth smth, not working");
+
+        }).then((data) => {
+            if(data.lock) {
+                event.target.style.borderColor = 'gray'
+            } else {
+                event.target.style.borderColor = 'black'
             }
-            else {
-                dice[i].style.borderColor = "black"
-            }*/
-        });
+            event.target.disabled = data.lock;
+        })
     }
 }
+
 function toggleLight(index) {
-    var light = document.getElementsByClassName("sphere")[index - 1];
-    console.log(light);
+    let light = document.getElementsByClassName("sphere")[index];
+  
     if (light.classList.contains("green")) {
-      light.classList.remove("green");
-      light.classList.add("red");
-    } 
+        light.classList.remove("green");
+        light.classList.add("red");
+    }
 
 
 }
@@ -63,49 +115,62 @@ function postChoice(element) {
     if(index > 14) {
         return;
     }
+    if (rollCounter === 0){
+        alert("Remember to roll dice before choosing a score field<3")
+        return;
+    }
     fetch('rest/game/lockfield', {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({id: index})
-    }).then(async function(res) {
-        if(res.status === 200) {
+        body: JSON.stringify({ id: index })
+    }).then(async function (res) {
+        if (res.status === 200) {
             return res.json();
         }
 
-        if(res.status === 403){
+        if (res.status === 403) {
             let errText = await res.text();
             alert(errText);
         }
-        throw new Error ("Something went wrong");
+        throw new Error("Something went wrong");
 
-    }).then(function(data) {
+    }).then(function (data) {
         for (let i = 0; i < scores.length; i++) {
             const score = getScore(i, data.player.score);
             scores[i].value = score.value;
-            if(score.held === true) {
+            if (score.held === true) {
                 scores[i].style.backgroundColor = 'lightblue';
             } else {
                 scores[i].style.backgroundColor = 'white';
             }
         }
+
         prevPlayerLI.style.transform = 'scale(1)';
-        let newPlayerLI =  document.getElementById(data.player.name);
+        let newPlayerLI = document.getElementById(data.player.name);
         newPlayerLI.style.transform = 'scale(1.10)';
         prevPlayerLI = newPlayerLI;
+        if(data.turn > turn) {
+            toggleLight(turn);
+        }
         turn = data.turn;
-        toggleLight(turn);
+
         rollButton.disabled = false;
         rollCounter = 0
         rollButton.setAttribute("class", "glow-button")
+
+        for (let i = 0; i < dice.length; i++) {
+            dice[i].disabled = false;
+            dice[i].style.borderColor = "black";
+        }
     })
 }
 
 
 function buttonRoll() {
     rollCounter++
-    if (rollCounter === 3){
+    if (rollCounter === 3) {
         rollButton.disabled = true;
         rollButton.setAttribute("class", "normcore-button")
     }
@@ -119,7 +184,6 @@ function buttonRoll() {
     }).then(data => {
         for (let i = 0; i < dice.length; i++) {
             diceValues[i] = data.dice[i];
-            dice[i].style.borderColor = "black";
         }
 
         updateDice();
@@ -131,8 +195,8 @@ function buttonRoll() {
 
 }
 
-function getScore(i, score){
-    switch(i) {
+function getScore(i, score) {
+    switch (i) {
         case 0: return score.ones;
         case 1: return score.twos;
         case 2: return score.threes;
@@ -151,8 +215,39 @@ function getScore(i, score){
         case 15: return score.sum;
         case 16: return score.bonus;
         case 17: return score.total;
-        default: return 0; 
+        default: return 0;
     }
+}
+
+function getToolTipData(pId) {
+    console.log(pId)
+    fetch('rest/game/getplayer', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({id: pId})
+    }).then((res) => {
+        if(res.ok) {
+            return res.json();
+        }
+    }).then((data) => {
+        let info  = ""
+
+        for (const [key, value] of Object.entries(data.player.score)) {
+            info += value.held ? key + ":" + value.value + "🔒\n" : `${key}: N/A\n`
+            console.log(key +" "+ value.value)
+        }
+        console.log(" ")
+        console.log(" ")
+        console.log(" ")
+        console.log(" ")
+        console.log(" ")
+        console.log(" ")
+        console.log(" ")
+        
+        document.getElementById(pId + 'tooltip').textContent = info;
+    })
 }
 
 //Updates the dice images
@@ -180,3 +275,4 @@ function updateDice() {
         }
     }
 }
+
