@@ -1,3 +1,4 @@
+import { gameFile } from "./app.js";
 let scores = [];
 //Dice images
 let diceImages;
@@ -97,6 +98,27 @@ function postLockDie(event) {
             event.target.disabled = data.lock;
         })
     }
+}
+
+function endGame() {
+    if (turn > 16) {
+        fetch('/rest/game/gameover', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json" 
+            },
+            body: JSON.stringify({"gameIsOver": "true"})
+        }).then(async (res) => {
+            if (res.status === 200) {
+                return res.json();
+            }
+                alert("endGame() har jokket i spinaten.")
+        }).then((data) => {
+            btnRoll = document.querySelector('button');
+            winner = 
+            btnRoll.prepend()
+        })
+    } else return;
 }
 
 function toggleLight(index) {

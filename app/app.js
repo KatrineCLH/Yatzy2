@@ -177,6 +177,11 @@ router.route('/startGame')
         return;
     })
 
+router.route('/game/gameover')
+    .post((req, res) => {
+        
+    }) 
+
 router.route('/game/reset')
     .post((req, res) => {
         if (!fileStream.existsSync(gameFile)) {
