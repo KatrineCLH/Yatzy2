@@ -73,7 +73,7 @@ function fillFirstPlayer() {
 }
 
 function postLockDie(event) {
-    if (rollCounter < 3 && rollCounter >= 0) {
+    if (rollCounter < 3 && rollCounter >0) {
         let index = [...dice].indexOf(event.target);
         fetch('/rest/game/lockdie', {
             method: "POST",
