@@ -1,3 +1,4 @@
+import { json } from "express";
 import { gameFile } from "./app.js";
 let scores = [];
 //Dice images
@@ -102,6 +103,7 @@ function postLockDie(event) {
 
 function endGame() {
     if (turn > 16) {
+        let scoreData = [];
         fetch('/rest/game/gameover', {
             method: "POST",
             headers: {
@@ -110,13 +112,18 @@ function endGame() {
             body: JSON.stringify({"gameIsOver": "true"})
         }).then(async (res) => {
             if (res.status === 200) {
+                scoreData = res.body;
                 return res.json();
             }
                 alert("endGame() har jokket i spinaten.")
-        }).then((data) => {
-            btnRoll = document.querySelector('button');
-            winner = 
-            btnRoll.prepend()
+        }).then(() => {
+            
+            winnerScoreJSON = scoreData[0]
+            let node = document.createElement('p')
+            node = function () {
+                //dimser at sætte på som sejrserklæring på et givent sted.
+            }
+            rollButton.prepend()
         })
     } else return;
 }

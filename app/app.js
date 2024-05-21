@@ -179,6 +179,22 @@ router.route('/startGame')
 
 router.route('/game/gameover')
     .post((req, res) => {
+
+        let playerScoreData = [];
+        players.forEach((player) => {
+            let playerName = '';
+            playerName = player.name;
+            let playerScore = {};
+            playerScoreResult = player.score.result;
+            playerGotYatzy = (player.score.yatzy !== 0);
+
+            playerScoreData.push({name: playerName, result: playerScoreResult, gotYatzy: playerGotYatzy})
+        })
+        playerScoreData.sort((p1, p2) => p1.result - p2.result);
+        
+        res.status(HttpStatus.OK).json(playerScoreData);
+        clearGameFile();
+        return;
         
     }) 
 
@@ -188,6 +204,7 @@ router.route('/game/reset')
             res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
             return;
         }
+        
 
         clearGameFile();
 
