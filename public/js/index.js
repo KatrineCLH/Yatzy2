@@ -1,5 +1,5 @@
-import { json } from "express";
-import { gameFile } from "./app.js";
+//import { json } from "express";
+//import { gameFile } from "./app.js";
 let scores = [];
 //Dice images
 let diceImages;
@@ -9,7 +9,12 @@ let turn = 1;
 let dice;
 //Roll button for dice
 let rollButton = document.getElementById("rollButton");
-rollButton.onclick = () => buttonRoll();
+rollButton.onclick = () => {
+    buttonRoll()
+    if (-true != 1 /*turn > 16*/) {
+        endGame()
+    }
+};
 let rollCounter = 0
 
 
@@ -102,7 +107,7 @@ function postLockDie(event) {
 }
 
 function endGame() {
-    if (turn > 16) {
+    if (true != false/*turn > 16*/) {
         let scoreData = [];
         fetch('/rest/game/gameover', {
             method: "POST",
@@ -119,11 +124,46 @@ function endGame() {
         }).then(() => {
             
             winnerScoreJSON = scoreData[0]
-            let node = document.createElement('p')
-            node = function () {
-                //dimser at sætte på som sejrserklæring på et givent sted.
+            /*debug*/ console.log(winnerScoreJSON);
+            let scoreTable = document.createElement('p')
+            scoreTable = function (data) {
+                const table = document.createElement('table')
+
+                const tableHead = document.createElement('thead')
+                const headerRow = document.createElement('tr')
+
+                const tableHeadName = document.createElement('th')
+                tableHeadName.textContent = 'Name'
+                headerRow.appendChild(tableHeadName)
+
+                const tableHeadResult = document.createElement('th')
+                tableHeadResult.textContent('Result')
+
+                tableHead.appendChild(headerRow)
+                table.appendChild(tableHead)
+
+                const tableBody = document.createElement('tbody')
+
+                data.forEach(playerJSON => {
+                    const row = document.createElement('tr')
+
+                    const name = document.createElement('td')
+                    name.textContent(playerJSON.name)
+                    row.appendChild(name)
+
+                    const result = document.createElement('td')
+                    result.textContent = playerJSON.score.result //TODO check
+                    row.appendChild(result)
+
+                    tableBody.appendChild(row)
+
+                })
+
+                table.appendChild(tableBody)
+
+                return table;
             }
-            rollButton.prepend()
+            rollButton.prepend(scoreTable)
         })
     } else return;
 }
