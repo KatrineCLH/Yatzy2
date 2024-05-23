@@ -408,3 +408,9 @@ export function setFirstRollDone(isDone){
 export function getCurrentPlayer(){
     return gameStatus.currentPlayer;
 }
+
+
+//FOR TEST ONLY
+export function setDiceValues(d1,d2,d3,d4,d5){
+    diceValues = [d1,d2,d3,d4,d5]
+}
