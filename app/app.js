@@ -194,7 +194,7 @@ router.route('/game/gameover')
 
             playerScoreData.data.push({name: playerName, result: playerScoreTotal, gotYatzy: playerGotYatzy})
         })
-        playerScoreData.data.sort((p1, p2) => p1.result - p2.result);
+        playerScoreData.data.sort((p1, p2) => p2.result - p1.result);
         
 
         res.status(HttpStatus.OK).json(playerScoreData);

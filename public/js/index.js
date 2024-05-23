@@ -146,7 +146,7 @@ function endGame() {
                 const row = document.createElement('tr')
 
                 const name = document.createElement('td')
-                const nameText = document.createTextNode(data.data[i].name)
+                const nameText = document.createTextNode((i+1) +". " + data.data[i].name)
                 name.appendChild(nameText)
                 row.appendChild(name)
 
