@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { getCurrentPlayer, getNextPlayer, players, setCurrentPlayer, setPlayers } from '../app/gameLogic.js';
+import { getCurrentPlayer, getNextPlayer, players, setCurrentPlayer, setPlayers, gameStatus } from '../app/gameLogic.js';
 import Player from '../app/player.js';
 
 //
