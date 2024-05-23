@@ -4,16 +4,11 @@ html
         title Yatzy for one
         script(src="js/index.js", defer)
         link(rel='stylesheet', type="text/css" href='/styles/yatzy.css')
+        link(rel='stylesheet' href='/styles/modal.css')
+        script(src="/js/modal.js", defer)
     body
         include navbar.pug
-        #modal-1(aria-hidden="true")
-            div(tabindex="-1", data-micromodal-close)
-                div(role="dialog", aria-modal="true", aria-labelledby="modal-1-title")
-                    header
-                        h2#modal-1-title WINNER WINNER, CHICKEN DINNER
-                        button(aria-label="Close modal", data-micromodal-close)
-                    #modal-1-content Modal Content
-
+        include modal.pug
         #container(data-first-player = firstPlayer)
             #sidebar
                 ol.ol-players(style="--text:'Player'" id="playerList")
@@ -80,11 +75,8 @@ html
                                 label(for="Total") Total:
                                 input(type="text", id="Total", name="Totalt", readonly)
             #ul.turn
-                each val in Array.from({length: 15}, (_, i) => i + 1)
+                each val in Array.from({length: 16}, (_, i) => i + 1)
                     li
                         div.sphere.green
                         | Turn #{val}
-        if (turn > 16)
-            // I tilfælde af sejr
-            include victory.pug 
         
