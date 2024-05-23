@@ -10,7 +10,7 @@ export function resetStuff(){
 }
 */
 
-describe( 'When reset', () => {
+describe( 'For resetStuff()', () => {
     it('Should change lock status of die (test lockDie())', () => {
         //change lock status of a die and compare with old value to see if lockDie()-method works
         let oldDiceLocked = [...diceLocked]
