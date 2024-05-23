@@ -184,15 +184,15 @@ router.route('/game/gameover')
         players.forEach((player) => {
             let playerName = '';
             playerName = player.name;
-            let playerScore = {};
-            playerScoreResult = player.score.result;
-            playerGotYatzy = (player.score.yatzy !== 0);
+            let playerScoreTotal = player.score.total.value;
+            let playerGotYatzy = (player.score.yatzy.value !== 0);
 
-            playerScoreData.push({name: playerName, result: playerScoreResult, gotYatzy: playerGotYatzy})
+            playerScoreData.push({name: playerName, result: playerScoreTotal, gotYatzy: playerGotYatzy})
         })
         playerScoreData.sort((p1, p2) => p1.result - p2.result);
         
-        res.status(HttpStatus.OK).json(playerScoreData);
+
+        res.status(HttpStatus.OK).json(JSON.stringify(playerScoreData));
         clearGameFile();
         return;
         

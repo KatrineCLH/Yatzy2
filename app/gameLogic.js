@@ -152,7 +152,7 @@ export function updateScores(player) {
     fillChance(player);
     fillYatzy(player);
     fillSinglesSum(player);
-    //fillTotal(player);
+    fillTotal(player);
 }
 
 
@@ -173,8 +173,16 @@ export function fillSinglesSum(player) {
     }
 }
 //Updates the total field
-export function fillTotal() {
-    document.getElementById("Total").value = points + bonus;
+export function fillTotal(player) {
+
+    let total = 0;
+    for (const [key, value] of Object.entries(player.score)) {
+        if (key.toString() !== 'sum') {
+            total += value
+        }
+    }
+    player.score.total = total
+
 }
 
 

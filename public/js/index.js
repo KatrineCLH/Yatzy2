@@ -1,5 +1,6 @@
 //import { json } from "express";
 //import { gameFile } from "./app.js";
+import MicroModal, {modal} from "micromodal"
 let scores = [];
 //Dice images
 let diceImages;
@@ -9,7 +10,7 @@ let turn = 1;
 let dice;
 //Roll button for dice
 let rollButton = document.getElementById("rollButton");
-rollButton.onclick = () => {
+rollButton.onclick = async () => {
     buttonRoll()
     if (-true != 1 /*turn > 16*/) {
         endGame()
@@ -21,6 +22,8 @@ let rollCounter = 0
 
 //Window onload. Do all the variable stuff here
 window.onload = function () {
+    MicroModal.init()
+    MicroModal.show()
     //Extracting all input fields (scores)and attaching event clickers
 
     //setting first player to be first move.
@@ -117,53 +120,64 @@ function endGame() {
             body: JSON.stringify({"gameIsOver": "true"})
         }).then(async (res) => {
             if (res.status === 200) {
-                scoreData = res.body;
                 return res.json();
             }
                 alert("endGame() har jokket i spinaten.")
-        }).then(() => {
+        }).then((data) => {
             
-            winnerScoreJSON = scoreData[0]
-            /*debug*/ console.log(winnerScoreJSON);
-            let scoreTable = document.createElement('p')
-            scoreTable = function (data) {
+            let makeTable = function () {
                 const table = document.createElement('table')
-
+                
                 const tableHead = document.createElement('thead')
                 const headerRow = document.createElement('tr')
-
+                
                 const tableHeadName = document.createElement('th')
                 tableHeadName.textContent = 'Name'
                 headerRow.appendChild(tableHeadName)
-
+                
                 const tableHeadResult = document.createElement('th')
-                tableHeadResult.textContent('Result')
-
+                tableHeadResult.textContent = 'Result'
+                headerRow.appendChild(tableHeadResult)
+                
+                const tableHeadYatzy = document.createElement('th')
+                tableHeadYatzy.textContent = 'Got Yatzy?'
+                headerRow.appendChild(tableHeadYatzy)
+                
+                
                 tableHead.appendChild(headerRow)
                 table.appendChild(tableHead)
-
+                
                 const tableBody = document.createElement('tbody')
-
-                data.forEach(playerJSON => {
+                console.log(data);
+                [...data].forEach(playerJSON => {
                     const row = document.createElement('tr')
 
                     const name = document.createElement('td')
-                    name.textContent(playerJSON.name)
+                    name.textContent = playerJSON.name
+                    name.textContent += "\n"
                     row.appendChild(name)
-
+                    
                     const result = document.createElement('td')
-                    result.textContent = playerJSON.score.result //TODO check
+                    result.textContent = playerJSON.result
                     row.appendChild(result)
 
+                    const gotYatzy = document.createElement('td')
+                    gotYatzy.textContent = playerJSON.yatzy
+                    row.appendChild(gotYatzy)
+
+                    const divertsen = document.createElement('div')
+                    row.appendChild(divertsen)
+                    
                     tableBody.appendChild(row)
-
+                    
                 })
-
+                
                 table.appendChild(tableBody)
 
                 return table;
             }
-            rollButton.prepend(scoreTable)
+            
+            rollButton.childNodes[0].nodeValue = makeTable();
         })
     } else return;
 }
