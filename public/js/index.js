@@ -320,10 +320,14 @@ function getToolTipData(pId) {
         }
     }).then((data) => {
         let info = ""
-
         for (const [key, value] of Object.entries(data.player.score)) {
-            info += value.held ? key + ":" + value.value + "🔒\n" : `${key}: N/A\n`
-            console.log(key + " " + value.value)
+            if(key.toString() === "total" || key.toString() === "sum" || key.toString() === 'bonus') {
+                info += key + ": " + value.value + "\n"
+            } else {
+                info += value.held ? key + ":" + value.value + "🔒\n" : `${key}: N/A\n`
+            }
+
+
         }
 
         document.getElementById(pId + 'tooltip').textContent = info;
