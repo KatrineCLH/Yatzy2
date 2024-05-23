@@ -1,7 +1,24 @@
 import { assert } from 'chai';
-import { getNextPlayer } from '../app/gameLogic.js';
+import { getCurrentPlayer, getNextPlayer, players, setCurrentPlayer, setPlayers, gameStatus } from '../app/gameLogic.js';
+import Player from '../app/player.js';
 
-describe
+//
+
+describe("For getNextPlayer()", () => {
+    it('Test of array with length 3', () => {
+        let jan = new Player("jan")
+        let kaj = new Player("kaj")
+        let lin = new Player("lin")
+        let playersss = [jan, kaj, lin]
+
+        setPlayers(playersss)
+        setCurrentPlayer(jan)
+        getNextPlayer()
+
+        assert.sameMembers(players, playersss, "players succesfully added to array players")
+        assert.equal(getCurrentPlayer(), kaj, "set currentPlayer correctly to next player")
+    })
+})
 
 /*
 export function getNextPlayer() {
