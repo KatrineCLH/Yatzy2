@@ -1,3 +1,5 @@
+//import { json } from "express";
+//import { gameFile } from "./app.js";
 let scores = [];
 //Dice images
 let diceImages;
@@ -7,21 +9,24 @@ let turn = 1;
 let dice;
 //Roll button for dice
 let rollButton = document.getElementById("rollButton");
-rollButton.onclick = () => buttonRoll();
+rollButton.onclick = async () => {
+    buttonRoll()
+};
 let rollCounter = 0
 
 
 
 //Window onload. Do all the variable stuff here
 window.onload = function () {
+
     //Extracting all input fields (scores)and attaching event clickers
 
     //setting first player to be first move.
 
     playerProfiles = document.querySelectorAll('ol li');
 
-    for(let i = 0; i < playerProfiles.length; i++) {
-        playerProfiles[i].addEventListener('mouseenter', function(event) {
+    for (let i = 0; i < playerProfiles.length; i++) {
+        playerProfiles[i].addEventListener('mouseenter', function (event) {
             getToolTipData(event.target.id);
         })
     }
@@ -40,9 +45,9 @@ window.onload = function () {
 
     //Dice event listeners
     dice = document.querySelectorAll("img[id^='die']")
-    
+
     for (let i = 0; i < dice.length; i++) {
-        dice[i].addEventListener("click", function(event) {postLockDie(event)})
+        dice[i].addEventListener("click", function (event) { postLockDie(event) })
     }
 
     fillFirstPlayer();
@@ -52,7 +57,7 @@ function fillFirstPlayer() {
     const firstPlayer = JSON.parse(document.getElementById('container').dataset.firstPlayer);
     const startingTurn = document.getElementById('content').dataset.startingTurn
     turn = startingTurn
-    for(let i = 0; i < startingTurn; i++) {
+    for (let i = 0; i < startingTurn; i++) {
         toggleLight(i);
     }
 
@@ -66,7 +71,7 @@ function fillFirstPlayer() {
         }
     }
     prevPlayerLI = [...playerProfiles].filter((pf) => pf.id === firstPlayer.name)[0];
-    if(prevPlayerLI === undefined) {
+    if (prevPlayerLI === undefined) {
         prevPlayerLI = playerProfiles[0]
     }
     prevPlayerLI.style.transform = 'scale(1.10)';
@@ -89,7 +94,7 @@ function postLockDie(event) {
             alert("Smth smth, not working");
 
         }).then((data) => {
-            if(data.lock) {
+            if (data.lock) {
                 event.target.style.borderColor = 'gray'
             } else {
                 event.target.style.borderColor = 'black'
@@ -99,9 +104,82 @@ function postLockDie(event) {
     }
 }
 
+function endGame() {
+    fetch('/rest/game/gameover', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ "gameIsOver": "true" })
+    }).then(async (res) => {
+        if (res.status === 200) {
+            return res.json();
+        }
+        alert("endGame() har jokket i spinaten.")
+    }).then((data) => {
+
+        let makeTable = function () {
+            const table = document.createElement('table')
+
+            const tableHead = document.createElement('thead')
+            const headerRow = document.createElement('tr')
+
+            const tableHeadName = document.createElement('th')
+            tableHeadName.textContent = 'Name'
+            headerRow.appendChild(tableHeadName)
+
+            const tableHeadResult = document.createElement('th')
+            tableHeadResult.textContent = 'Result'
+            headerRow.appendChild(tableHeadResult)
+
+            const tableHeadYatzy = document.createElement('th')
+            tableHeadYatzy.textContent = 'Got Yatzy?'
+            headerRow.appendChild(tableHeadYatzy)
+
+
+            tableHead.appendChild(headerRow)
+            table.appendChild(tableHead)
+
+            const tableBody = document.createElement('tbody');
+            for (let i = 0; i < data.data.length; i++) {
+                console.log(data.data[i])
+                const row = document.createElement('tr')
+
+                const name = document.createElement('td')
+                const nameText = document.createTextNode(data.data[i].name)
+                name.appendChild(nameText)
+                row.appendChild(name)
+
+                const result = document.createElement('td')
+                const resultText = document.createTextNode(data.data[i].result)
+                result.appendChild(resultText)
+                row.appendChild(result)
+
+                const gotYatzy = document.createElement('td')
+                const yatzyText = document.createTextNode(data.data[i].gotYatzy ? '✔' : " ")
+                gotYatzy.appendChild(yatzyText);
+
+                row.appendChild(gotYatzy)
+
+                tableBody.appendChild(row)
+
+            }
+
+            table.appendChild(tableBody)
+
+            return table;
+        }
+
+        let modal = document.getElementById('modalContent');
+        modal.appendChild(makeTable());
+        openModal('modal');
+    })
+}
+
+
 function toggleLight(index) {
     let light = document.getElementsByClassName("sphere")[index];
-  
+
     if (light.classList.contains("green")) {
         light.classList.remove("green");
         light.classList.add("red");
@@ -112,10 +190,10 @@ function toggleLight(index) {
 
 function postChoice(element) {
     let index = [...scores].indexOf(element);
-    if(index > 14) {
+    if (index > 14) {
         return;
     }
-    if (rollCounter === 0){
+    if (rollCounter === 0) {
         alert("Remember to roll dice before choosing a score field<3")
         return;
     }
@@ -152,7 +230,7 @@ function postChoice(element) {
         let newPlayerLI = document.getElementById(data.player.name);
         newPlayerLI.style.transform = 'scale(1.10)';
         prevPlayerLI = newPlayerLI;
-        if(data.turn > turn) {
+        if (data.turn > turn) {
             toggleLight(turn);
         }
         turn = data.turn;
@@ -164,6 +242,10 @@ function postChoice(element) {
         for (let i = 0; i < dice.length; i++) {
             dice[i].disabled = false;
             dice[i].style.borderColor = "black";
+        }
+
+        if(turn === 16) {
+            endGame();
         }
     })
 }
@@ -227,26 +309,19 @@ function getToolTipData(pId) {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({id: pId})
+        body: JSON.stringify({ id: pId })
     }).then((res) => {
-        if(res.ok) {
+        if (res.ok) {
             return res.json();
         }
     }).then((data) => {
-        let info  = ""
+        let info = ""
 
         for (const [key, value] of Object.entries(data.player.score)) {
-            info += value.held ? key + ":" + value.value + "🔒\n" : `${key}: -\n`
-            console.log(key +" "+ value.value)
+            info += value.held ? key + ":" + value.value + "🔒\n" : `${key}: N/A\n`
+            console.log(key + " " + value.value)
         }
-        console.log(" ")
-        console.log(" ")
-        console.log(" ")
-        console.log(" ")
-        console.log(" ")
-        console.log(" ")
-        console.log(" ")
-        
+
         document.getElementById(pId + 'tooltip').textContent = info;
     })
 }

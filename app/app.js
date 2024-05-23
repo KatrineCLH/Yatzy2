@@ -179,12 +179,34 @@ router.route('/startGame')
         return;
     })
 
+router.route('/game/gameover')
+    .post((req, res) => {
+
+        let playerScoreData = {data : []};
+        players.forEach((player) => {
+            let playerName = '';
+            playerName = player.name;
+            let playerScoreTotal = player.score.total.value;
+            let playerGotYatzy = (player.score.yatzy.value !== 0);
+
+            playerScoreData.data.push({name: playerName, result: playerScoreTotal, gotYatzy: playerGotYatzy})
+        })
+        playerScoreData.data.sort((p1, p2) => p1.result - p2.result);
+        
+
+        res.status(HttpStatus.OK).json(playerScoreData);
+        clearGameFile();
+        return;
+        
+    }) 
+
 router.route('/game/reset')
     .post((req, res) => {
         if (!fileStream.existsSync(gameFile)) {
             res.status(HttpStatus.NOT_FOUND).send(userFile + " could not be found");
             return;
         }
+        
 
         clearGameFile();
 
