@@ -17,7 +17,8 @@ import {
     players, setCurrentPlayer, setPlayers, setFirstRollDone, getCurrentPlayer,
     lockDie, unlockAllDice,
     saveGame,loadGame, 
-    fillSinglesSum
+    fillSinglesSum,
+    fillTotal
 } from "./gameLogic.js";
 
 const app = express();
@@ -86,8 +87,10 @@ router.route('/game/lockfield')
         }
         unlockAllDice();
         setHeld(req.body.id, getPlayer(gameStatus.currentPlayer.name))
-        fillSinglesSum(gameStatus.currentPlayer);
         setCurrentPlayer(getNextPlayer());
+        //Make sure sum and total are updated prior to showing.
+        fillSinglesSum(gameStatus.currentPlayer);
+        fillTotal(gameStatus.currentPlayer);
         saveGame();
         res.status(HttpStatus.OK).json({ player: gameStatus.currentPlayer, turn: gameStatus.turn });
     })

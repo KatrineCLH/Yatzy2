@@ -107,8 +107,6 @@ export function lockDie(id) {
 export function getPlayer(id) {
     let playerArr = [...players];
     let index = playerArr.findIndex(p => p.name === id);
-    console.log('getPlayer() id:    ' + id)
-    console.log('getPlayer() index: ' + index)
 
     return playerArr[index];
 }
@@ -176,12 +174,14 @@ export function fillSinglesSum(player) {
 export function fillTotal(player) {
 
     let total = 0;
-    for (const [key, value] of Object.entries(player.score)) {
-        if (key.toString() !== 'sum') {
-            total += value
+    for (const [key, score] of Object.entries(player.score)) {
+        if (key.toString() !== 'sum' && key.toString() !== 'total') {
+            if(score.held === true) {
+                total += score.value
+            }
         }
     }
-    player.score.total = total
+    player.score.total.value = total
 
 }
 

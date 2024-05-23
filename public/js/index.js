@@ -215,6 +215,9 @@ function postChoice(element) {
         throw new Error("Something went wrong");
 
     }).then(function (data) {
+        console.log(scores);
+        scores[17].value = data.player.score.total.value
+        scores[15].value = data.player.score.sum.value
         for (let i = 0; i < scores.length; i++) {
             const score = getScore(i, data.player.score);
             if (score.held === true) {
@@ -224,6 +227,7 @@ function postChoice(element) {
                 scores[i].style.backgroundColor = 'white';
                 if (i < 14) scores[i].value = 0;
             }
+            
         }
 
         prevPlayerLI.style.transform = 'scale(1)';

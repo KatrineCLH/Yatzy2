@@ -15,10 +15,9 @@ class Score {
         this.largeStraight = {held: false, value: 0}
         this.chance = {held: false, value: 0}
         this.yatzy = {held: false, value: 0}
-        this.total = {held: false, value: 0}
         this.sum = {held: false, value: 0}
         this.bonus = {held: false, value: 0}
-        this.result = {held: false, value: 0}
+        this.total = {held: false, value: 0}
     }
 }
 
