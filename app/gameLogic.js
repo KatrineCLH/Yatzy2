@@ -107,8 +107,8 @@ export function lockDie(id) {
 export function getPlayer(id) {
     let playerArr = [...players];
     let index = playerArr.findIndex(p => p.name === id);
-    console.log(id)
-    console.log(index)
+    console.log('getPlayer() id:    ' + id)
+    console.log('getPlayer() index: ' + index)
 
     return playerArr[index];
 }

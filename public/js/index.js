@@ -66,7 +66,7 @@ function fillFirstPlayer() {
         toggleLight(i);
     }
 
-    for (let i = 1; i < scores.length; i++) {
+    for (let i = 0; i < scores.length; i++) {
         const score = getScore(i, firstPlayer.score);
         scores[i].value = score.value;
         if (score.held === true) {
@@ -83,7 +83,7 @@ function fillFirstPlayer() {
 }
 
 function postLockDie(event) {
-    if (rollCounter < 3 && rollCounter >= 0) {
+    if (rollCounter < 3 && rollCounter >0) {
         let index = [...dice].indexOf(event.target);
         fetch('/rest/game/lockdie', {
             method: "POST",
@@ -222,11 +222,12 @@ function postChoice(element) {
     }).then(function (data) {
         for (let i = 0; i < scores.length; i++) {
             const score = getScore(i, data.player.score);
-            scores[i].value = score.value;
             if (score.held === true) {
                 scores[i].style.backgroundColor = 'lightblue';
+                scores[i].value = score.value;
             } else {
                 scores[i].style.backgroundColor = 'white';
+                if (i < 14) scores[i].value = 0;
             }
         }
 
@@ -318,7 +319,7 @@ function getToolTipData(pId) {
         let info  = ""
 
         for (const [key, value] of Object.entries(data.player.score)) {
-            info += value.held ? key + ":" + value.value + "🔒\n" : `${key}: N/A\n`
+            info += value.held ? key + ":" + value.value + "🔒\n" : `${key}: -\n`
             console.log(key +" "+ value.value)
         }
         console.log(" ")
